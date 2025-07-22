@@ -18,16 +18,14 @@ blog/
 │   ├── metadata.json       # Post metadata (title, date, category, etc.)
 │   ├── *.html              # Published HTML posts
 │   └── *.md                # Markdown source files
-├── md-to-html-fixed.js     # Node.js Markdown to HTML converter
-├── convert.bat             # Windows batch script for easy conversion
-└── README.md
+├── md-to-html.js           # Node.js Markdown to HTML converter (using marked library)
 ```
 
 ## � Converting Markdown to HTML
 
 ### Using Node.js (Recommended)
 ```bash
-node md-to-html-fixed.js posts/your-post.md posts/your-post.html
+node md-to-html.js posts/your-post.md posts/your-post.html
 ```
 
 ### Markdown Front Matter Format

@@ -1,14 +1,12 @@
 ---
 title: "Understanding Cryptographic Hash Functions"
 date: "2025-01-10"
-category: "cryp"
+category: "cryptography"
 excerpt: "A deep dive into cryptographic hash functions, their properties, and their role in securing digital systems. Learn about SHA-256, collision resistance, and practical applications."
 tags: ["cryptography", "hash functions", "security", "sha256"]
 author: "Prashish Phunyal"
 readTime: "7 min read"
 ---
-
-# Understanding Cryptographic Hash Functions
 
 Cryptographic hash functions are fundamental building blocks of modern digital security. They're everywhere—from password storage to blockchain technology—yet many people don't fully understand how they work or why they're so crucial to our digital infrastructure.
 

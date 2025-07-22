@@ -6,10 +6,10 @@ class BlogSystem {
     constructor() {
         this.posts = [];
         this.categories = {
-            'bloc': 'Blockchain',
-            'cryp': 'Cryptography',
-            'frag': 'Fragments',
-            'math': 'Mathematics'
+            'blockchain': 'Blockchain',
+            'cryptography': 'Cryptography',
+            'fragments': 'Fragments',
+            'mathematics': 'Mathematics'
         };
     }
 
@@ -120,9 +120,9 @@ class BlogSystem {
         
         return this.posts.filter(post => {
             return (
-                post.title.toLowerCase().includes(searchTerm) ||
-                post.excerpt.toLowerCase().includes(searchTerm) ||
-                post.tags.some(tag => tag.toLowerCase().includes(searchTerm)) ||
+                (post.title || '').toLowerCase().includes(searchTerm) ||
+                (post.excerpt || '').toLowerCase().includes(searchTerm) ||
+                (post.tags || []).some(tag => tag.toLowerCase().includes(searchTerm)) ||
                 this.getCategoryName(post.category).toLowerCase().includes(searchTerm)
             );
         });
@@ -140,46 +140,46 @@ class BlogSystem {
     /**
      * Get sample posts for development/demo
      */
-    getSamplePosts() {
-        return [
-            {
-                title: "Introduction to Blockchain Technology",
-                date: "2025-01-15",
-                category: "bloc",
-                excerpt: "Exploring the fundamentals of blockchain technology and its potential applications in various industries.",
-                tags: ["blockchain", "technology", "decentralization"],
-                url: "./posts/intro-to-blockchain.html",
-                readTime: "5 min read"
-            },
-            {
-                title: "Understanding Cryptographic Hash Functions",
-                date: "2025-01-10",
-                category: "cryp",
-                excerpt: "A deep dive into cryptographic hash functions, their properties, and their role in securing digital systems.",
-                tags: ["cryptography", "hash functions", "security"],
-                url: "./posts/crypto-hash-functions.html",
-                readTime: "7 min read"
-            },
-            {
-                title: "Random Thoughts on AI",
-                date: "2025-01-01",
-                category: "frag",
-                excerpt: "Some scattered thoughts on the current state and future of artificial intelligence.",
-                tags: ["ai", "thoughts", "future"],
-                url: "./posts/random-thoughts-ai.html",
-                readTime: "3 min read"
-            },
-            {
-                title: "Mathematical Foundations of Machine Learning",
-                date: "2024-12-28",
-                category: "math",
-                excerpt: "Essential mathematical concepts that underpin modern machine learning algorithms.",
-                tags: ["mathematics", "machine learning", "linear algebra"],
-                url: "./posts/math-foundations-ml.html",
-                readTime: "8 min read"
-            }
-        ];
-    }
+    // getSamplePosts() {
+    //     return [
+    //         {
+    //             title: "Introduction to Blockchain Technology",
+    //             date: "2025-01-15",
+    //             category: "bloc",
+    //             excerpt: "Exploring the fundamentals of blockchain technology and its potential applications in various industries.",
+    //             tags: ["blockchain", "technology", "decentralization"],
+    //             url: "./posts/intro-to-blockchain.html",
+    //             readTime: "5 min read"
+    //         },
+    //         {
+    //             title: "Understanding Cryptographic Hash Functions",
+    //             date: "2025-01-10",
+    //             category: "cryp",
+    //             excerpt: "A deep dive into cryptographic hash functions, their properties, and their role in securing digital systems.",
+    //             tags: ["cryptography", "hash functions", "security"],
+    //             url: "./posts/crypto-hash-functions.html",
+    //             readTime: "7 min read"
+    //         },
+    //         {
+    //             title: "Random Thoughts on AI",
+    //             date: "2025-01-01",
+    //             category: "frag",
+    //             excerpt: "Some scattered thoughts on the current state and future of artificial intelligence.",
+    //             tags: ["ai", "thoughts", "future"],
+    //             url: "./posts/random-thoughts-ai.html",
+    //             readTime: "3 min read"
+    //         },
+    //         {
+    //             title: "Mathematical Foundations of Machine Learning",
+    //             date: "2024-12-28",
+    //             category: "math",
+    //             excerpt: "Essential mathematical concepts that underpin modern machine learning algorithms.",
+    //             tags: ["mathematics", "machine learning", "linear algebra"],
+    //             url: "./posts/math-foundations-ml.html",
+    //             readTime: "8 min read"
+    //         }
+    //     ];
+    // }
 
     /**
      * Render post list HTML

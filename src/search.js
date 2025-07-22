@@ -65,14 +65,30 @@ class SearchSystem {
         this.isSearching = true;
         this.updateSearchState();
 
-        // Perform the search
-        this.searchResults = this.blogSystem.searchPosts(query);
-        
-        // Update UI with results
-        this.displaySearchResults(query);
-        
-        // Update URL to reflect search
-        this.updateSearchURL(query);
+        try {
+            // Perform the search
+            this.searchResults = this.blogSystem.searchPosts(query);
+            
+            // Update UI with results
+            this.displaySearchResults(query);
+            
+            // Update URL to reflect search
+            this.updateSearchURL(query);
+        } catch (error) {
+            console.error('Search error:', error);
+            this.isSearching = false;
+            this.updateSearchState();
+            
+            // Show error message
+            const recentPostsList = document.getElementById('recent-posts');
+            if (recentPostsList) {
+                recentPostsList.innerHTML = `
+                    <li class="error-state">
+                        <p>Search error occurred. Please try again.</p>
+                    </li>
+                `;
+            }
+        }
     }
 
     /**
@@ -82,6 +98,13 @@ class SearchSystem {
         this.isSearching = false;
         this.searchResults = [];
         this.updateSearchState();
+        
+        // Update section title back to "Recent Posts"
+        const postsSection = document.querySelector('.posts-section');
+        const sectionTitle = postsSection?.querySelector('.section-title');
+        if (sectionTitle) {
+            sectionTitle.textContent = 'Recent Posts';
+        }
         
         // Show all recent posts
         const recentPostsList = document.getElementById('recent-posts');

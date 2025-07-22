@@ -132,6 +132,12 @@ class CategoryRouter {
         const main = document.querySelector('.main');
         if (!main) return;
 
+        // Remove any existing category page first
+        const existingCategoryPage = document.querySelector('.category-page');
+        if (existingCategoryPage) {
+            existingCategoryPage.remove();
+        }
+
         // Create category page HTML
         const categoryPageHTML = `
             <div class="category-page">
@@ -140,7 +146,6 @@ class CategoryRouter {
                         ← Back to Home
                     </button>
                     <h1 class="category-title">
-                        <span class="category-icon">${this.getCategoryIcon(categorySlug)}</span>
                         ${categoryName}
                     </h1>
                 </div>
@@ -155,7 +160,8 @@ class CategoryRouter {
             </div>
         `;
 
-        main.innerHTML = categoryPageHTML;
+        // Insert category page after hiding home elements
+        main.insertAdjacentHTML('beforeend', categoryPageHTML);
 
         // Render posts if any
         if (posts.length > 0) {
@@ -168,56 +174,9 @@ class CategoryRouter {
      * Render home page
      */
     renderHomePage() {
-        const main = document.querySelector('.main');
-        if (!main) return;
-
-        // Restore original home page content
-        main.innerHTML = `
-            <!-- Search Bar -->
-            <div class="search-container">
-                <input type="search" id="search-input" class="search-input" placeholder="Search posts..." aria-label="Search posts">
-                <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-            </div>
-
-            <!-- Categories -->
-            <section class="categories-section">
-                <h2 class="section-title">Categories</h2>
-                <nav class="categories-nav">
-                    <a href="#category/bloc" class="category-link" data-category="bloc">
-                        <span class="category-icon">🔗</span>
-                        Blockchain
-                    </a>
-                    <a href="#category/cryp" class="category-link" data-category="cryp">
-                        <span class="category-icon">🔐</span>
-                        Cryptography
-                    </a>
-                    <a href="#category/frag" class="category-link" data-category="frag">
-                        <span class="category-icon">💭</span>
-                        Fragments
-                    </a>
-                    <a href="#category/math" class="category-link" data-category="math">
-                        <span class="category-icon">🧮</span>
-                        Mathematics
-                    </a>
-                </nav>
-            </section>
-
-            <!-- Recent Posts -->
-            <section class="posts-section">
-                <h2 class="section-title">Recent Posts</h2>
-                <div class="posts-container">
-                    <ul class="post-list" id="recent-posts">
-                        <li class="loading-item">
-                            <div class="loading-spinner"></div>
-                            <span>Loading posts...</span>
-                        </li>
-                    </ul>
-                </div>
-            </section>
-        `;
-
+        // Simply show the existing home elements instead of recreating them
+        this.showHomeElements();
+        
         // Re-initialize components
         this.reinitializeComponents();
     }
@@ -228,20 +187,31 @@ class CategoryRouter {
     hideHomeElements() {
         const searchContainer = document.querySelector('.search-container');
         const categoriesSection = document.querySelector('.categories-section');
+        const postsSection = document.querySelector('.posts-section');
         
         if (searchContainer) searchContainer.style.display = 'none';
         if (categoriesSection) categoriesSection.style.display = 'none';
+        if (postsSection) postsSection.style.display = 'none';
     }
 
     /**
      * Show home page elements
      */
     showHomeElements() {
+        const main = document.querySelector('.main');
         const searchContainer = document.querySelector('.search-container');
         const categoriesSection = document.querySelector('.categories-section');
+        const postsSection = document.querySelector('.posts-section');
+        
+        // Remove any category page content
+        const categoryPage = document.querySelector('.category-page');
+        if (categoryPage) {
+            categoryPage.remove();
+        }
         
         if (searchContainer) searchContainer.style.display = 'block';
         if (categoriesSection) categoriesSection.style.display = 'block';
+        if (postsSection) postsSection.style.display = 'block';
     }
 
     /**
@@ -258,19 +228,6 @@ class CategoryRouter {
                 link.classList.remove('active');
             }
         });
-    }
-
-    /**
-     * Get category icon
-     */
-    getCategoryIcon(categorySlug) {
-        const icons = {
-            'bloc': '⛓️',
-            'cryp': '🔐',
-            'frag': '💭',
-            'math': '🧮'
-        };
-        return icons[categorySlug] || '📝';
     }
 
     /**

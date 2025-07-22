@@ -89,16 +89,16 @@
             <section class="categories-section">
                 <h2 class="section-title">Categories</h2>
                 <nav class="categories-nav">
-                    <a href="#category/bloc" class="category-link" data-category="bloc">
+                    <a href="#category/blockchain" class="category-link" data-category="blockchain">
                         Blockchain
                     </a>
-                    <a href="#category/cryp" class="category-link" data-category="cryp">
+                    <a href="#category/cryptography" class="category-link" data-category="cryptography">
                         Cryptography
                     </a>
-                    <a href="#category/frag" class="category-link" data-category="frag">
+                    <a href="#category/fragments" class="category-link" data-category="fragments">
                         Fragments
                     </a>
-                    <a href="#category/math" class="category-link" data-category="math">
+                    <a href="#category/mathematics" class="category-link" data-category="mathematics">
                         Mathematics
                     </a>
                 </nav>
@@ -146,7 +146,10 @@
                     const posts = await blogSystem.loadPosts();
                     
                     // Initialize search
-                    searchSystem.init(posts);
+                    searchSystem.init(posts, blogSystem);
+                    
+                    // Initialize search from URL if present
+                    searchSystem.initializeFromURL();
                     
                     // Display recent posts
                     const recentPostsList = document.getElementById('recent-posts');
