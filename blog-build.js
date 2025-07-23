@@ -205,27 +205,211 @@ class MarkdownConverter {
             process.exit(1);
         }
     }
+
+    /**
+     * Convert all markdown files in a directory to HTML
+     */
+    convertAllFiles(inputDir = './posts', outputDir = './posts') {
+        try {
+            // Ensure output directory exists
+            if (!fs.existsSync(outputDir)) {
+                fs.mkdirSync(outputDir, { recursive: true });
+            }
+
+            // Read all files in the input directory
+            const files = fs.readdirSync(inputDir);
+            
+            // Filter for markdown files
+            const markdownFiles = files.filter(file => 
+                file.endsWith('.md') && !file.startsWith('.')
+            );
+
+            if (markdownFiles.length === 0) {
+                console.log(`⚠️  No markdown files found in ${inputDir}`);
+                return;
+            }
+
+            console.log(`🔄 Found ${markdownFiles.length} markdown file(s) to convert...`);
+
+            let converted = 0;
+            let failed = 0;
+
+            markdownFiles.forEach(file => {
+                try {
+                    const inputPath = path.join(inputDir, file);
+                    const outputFile = file.replace(/\.md$/, '.html');
+                    const outputPath = path.join(outputDir, outputFile);
+
+                    this.convertFile(inputPath, outputPath);
+                    converted++;
+                } catch (error) {
+                    console.error(`❌ Failed to convert ${file}:`, error.message);
+                    failed++;
+                }
+            });
+
+            console.log(`\n📊 Conversion Summary:`);
+            console.log(`   ✅ Successfully converted: ${converted} files`);
+            if (failed > 0) {
+                console.log(`   ❌ Failed conversions: ${failed} files`);
+            }
+            console.log(`   📁 Output directory: ${path.resolve(outputDir)}`);
+
+        } catch (error) {
+            console.error(`❌ Error reading directory ${inputDir}:`, error.message);
+            process.exit(1);
+        }
+    }
+
+    /**
+     * Update metadata.json with new blog posts
+     */
+    updateMetadata(inputDir = './posts', metadataPath = './posts/metadata.json') {
+        try {
+            // Read all markdown files
+            const files = fs.readdirSync(inputDir);
+            const markdownFiles = files.filter(file => 
+                file.endsWith('.md') && !file.startsWith('.')
+            );
+
+            // Create new metadata object - only include posts with corresponding markdown files
+            const newMetadata = { posts: [] };
+
+            console.log(`🔄 Processing ${markdownFiles.length} markdown files for metadata...`);
+
+            markdownFiles.forEach(file => {
+                const inputPath = path.join(inputDir, file);
+                const markdownContent = fs.readFileSync(inputPath, 'utf8');
+                const { frontMatter } = this.parseFrontMatter(markdownContent);
+
+                if (frontMatter.title && frontMatter.date) {
+                    const htmlFilename = file.replace(/\.md$/, '.html');
+                    const postEntry = {
+                        title: frontMatter.title,
+                        date: frontMatter.date,
+                        category: frontMatter.category || 'general',
+                        excerpt: frontMatter.excerpt || '',
+                        tags: Array.isArray(frontMatter.tags) ? frontMatter.tags : [],
+                        url: `./posts/${htmlFilename}`,
+                        readTime: frontMatter.readTime || '5 min read',
+                        author: frontMatter.author || 'Prashish Phunyal'
+                    };
+
+                    newMetadata.posts.push(postEntry);
+                    console.log(`📝 Added metadata for: ${frontMatter.title}`);
+                }
+            });
+
+            // Sort posts by date (most recent first)
+            newMetadata.posts.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            // Write updated metadata
+            fs.writeFileSync(metadataPath, JSON.stringify(newMetadata, null, 2), 'utf8');
+            console.log(`✅ Updated metadata.json with ${newMetadata.posts.length} posts (removed entries without corresponding .md files)`);
+
+        } catch (error) {
+            console.error(`❌ Error updating metadata:`, error.message);
+            process.exit(1);
+        }
+    }
 }
 
 // CLI usage
 if (require.main === module) {
     const args = process.argv.slice(2);
-    
-    if (args.length < 1) {
-        console.log('Usage: node md-to-html.js input.md [output.html]');
-        process.exit(1);
-    }
-    
-    const inputPath = path.resolve(args[0]);
-    const outputPath = args[1] ? path.resolve(args[1]) : inputPath.replace(/\.md$/, '.html');
-    
-    if (!fs.existsSync(inputPath)) {
-        console.error(`❌ Input file not found: ${inputPath}`);
-        process.exit(1);
-    }
-    
     const converter = new MarkdownConverter();
-    converter.convertFile(inputPath, outputPath);
+    
+    // Parse command line arguments
+    const command = args[0];
+    
+    if (!command) {
+        console.log(`
+📖 Markdown to HTML Converter
+
+Usage:
+  node blog-build.js <command> [options]
+
+Commands:
+  convert <input.md> [output.html]    Convert single markdown file to HTML
+  build-all [input-dir] [output-dir]  Convert all markdown files in directory
+  update-metadata [posts-dir]         Update metadata.json with post information
+  help                                Show this help message
+
+Examples:
+  node blog-build.js convert posts/my-post.md
+  node blog-build.js build-all posts
+  node blog-build.js update-metadata posts
+        `);
+        process.exit(1);
+    }
+
+    switch (command) {
+        case 'convert':
+            if (args.length < 2) {
+                console.error('❌ Error: convert command requires input file');
+                console.log('Usage: node blog-build.js convert input.md [output.html]');
+                process.exit(1);
+            }
+            
+            const inputPath = path.resolve(args[1]);
+            const outputPath = args[2] ? path.resolve(args[2]) : inputPath.replace(/\.md$/, '.html');
+            
+            if (!fs.existsSync(inputPath)) {
+                console.error(`❌ Input file not found: ${inputPath}`);
+                process.exit(1);
+            }
+            
+            converter.convertFile(inputPath, outputPath);
+            break;
+
+        case 'build-all':
+            const inputDir = args[1] || './posts';
+            const outputDir = args[2] || './posts';
+            
+            if (!fs.existsSync(inputDir)) {
+                console.error(`❌ Input directory not found: ${inputDir}`);
+                process.exit(1);
+            }
+            
+            converter.convertAllFiles(inputDir, outputDir);
+            break;
+
+        case 'update-metadata':
+            const postsDir = args[1] || './posts';
+            
+            if (!fs.existsSync(postsDir)) {
+                console.error(`❌ Posts directory not found: ${postsDir}`);
+                process.exit(1);
+            }
+            
+            converter.updateMetadata(postsDir);
+            break;
+
+        case 'help':
+            console.log(`
+📖 Markdown to HTML Converter
+
+Usage:
+  node blog-build.js <command> [options]
+
+Commands:
+  convert <input.md> [output.html]    Convert single markdown file to HTML
+  build-all [input-dir] [output-dir]  Convert all markdown files in directory
+  update-metadata [posts-dir]         Update metadata.json with post information
+  help                                Show this help message
+
+Examples:
+  node blog-build.js convert posts/my-post.md
+  node blog-build.js build-all posts
+  node blog-build.js update-metadata posts
+            `);
+            break;
+
+        default:
+            console.error(`❌ Unknown command: ${command}`);
+            console.log('Run "node blog-build.js help" for usage information');
+            process.exit(1);
+    }
 }
 
 module.exports = MarkdownConverter;

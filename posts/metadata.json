@@ -1,13 +1,64 @@
 {
   "posts": [
     {
-      "title": "Introduction to Blockchain Technology",
-      "date": "2025-01-15",
+      "title": "Reflections | Codes, Ledgers and Life",
+      "date": "2025-07-22",
+      "category": "fragments",
+      "excerpt": "Some personal reflections",
+      "tags": [
+        "philosophy",
+        "nature",
+        "technology",
+        "reflections"
+      ],
+      "url": "./posts/reflections-mountains-ledgers-life.html",
+      "readTime": "8 min read",
+      "author": "Prashish Phunyal"
+    },
+    {
+      "title": "Understanding Bitcoin",
+      "date": "2025-07-22",
       "category": "blockchain",
-      "excerpt": "Exploring the fundamentals of blockchain technology and its potential applications in various industries. From Bitcoin to smart contracts, understanding the building blocks of decentralized systems.",
-      "tags": ["blockchain", "technology", "decentralization", "cryptocurrency"],
-      "url": "./posts/intro-to-blockchain.html",
-      "readTime": "5 min read",
+      "excerpt": "A comprehensive exploration of Bitcoin's technical foundations, from cryptographic primitives to consensus mechanisms. Understanding how digital scarcity became possible through mathematical innovation.",
+      "tags": [
+        "bitcoin",
+        "blockchain",
+        "cryptocurrency",
+        "proof of work"
+      ],
+      "url": "./posts/understanding-bitcoin.html",
+      "readTime": "12 min read",
+      "author": "Prashish Phunyal"
+    },
+    {
+      "title": "Understanding Digital Signatures",
+      "date": "2025-01-25",
+      "category": "cryptography",
+      "excerpt": "A comprehensive exploration of digital signature schemes, from mathematical foundations to real-world implementations. Understanding how mathematics enables non-repudiable authentication in the digital age.",
+      "tags": [
+        "cryptography",
+        "digital signatures",
+        "RSA",
+        "ECDSA",
+        "mathematics"
+      ],
+      "url": "./posts/understanding-digital-signatures.html",
+      "readTime": "14 min read",
+      "author": "Prashish Phunyal"
+    },
+    {
+      "title": "Understanding ECC Mathematical Foundations",
+      "date": "2025-01-20",
+      "category": "mathematics",
+      "excerpt": "Exploring the mathematical foundations of Elliptic Curve Cryptography (ECC). From algebraic geometry to discrete logarithms, understanding the math that powers modern cryptographic systems.",
+      "tags": [
+        "mathematics",
+        "cryptography",
+        "elliptic curves",
+        "ecc"
+      ],
+      "url": "./posts/understanding-ecc-foundations.html",
+      "readTime": "10 min read",
       "author": "Prashish Phunyal"
     },
     {
@@ -15,58 +66,13 @@
       "date": "2025-01-10",
       "category": "cryptography",
       "excerpt": "A deep dive into cryptographic hash functions, their properties, and their role in securing digital systems. Learn about SHA-256, collision resistance, and practical applications.",
-      "tags": ["cryptography", "hash functions", "security", "sha256"],
+      "tags": [
+        "cryptography",
+        "hash functions",
+        "security",
+        "sha256"
+      ],
       "url": "./posts/crypto-hash-functions.html",
-      "readTime": "7 min read",
-      "author": "Prashish Phunyal"
-    },
-    {
-      "title": "Random Thoughts on AI Development",
-      "date": "2025-01-01",
-      "category": "fragments",
-      "excerpt": "Some scattered thoughts on the current state and future of artificial intelligence. Reflections on machine learning progress, limitations, and societal implications.",
-      "tags": ["ai", "thoughts", "future", "machine learning"],
-      "url": "./posts/random-thoughts-ai.html",
-      "readTime": "3 min read",
-      "author": "Prashish Phunyal"
-    },
-    {
-      "title": "Mathematical Foundations of Machine Learning",
-      "date": "2024-12-28",
-      "category": "mathematics",
-      "excerpt": "Essential mathematical concepts that underpin modern machine learning algorithms. Linear algebra, calculus, and statistics fundamentals for understanding AI systems.",
-      "tags": ["mathematics", "machine learning", "linear algebra", "statistics"],
-      "url": "./posts/math-foundations-ml.html",
-      "readTime": "8 min read",
-      "author": "Prashish Phunyal"
-    },
-    {
-      "title": "Zero-Knowledge Proofs Explained",
-      "date": "2024-12-20",
-      "category": "cryptography",
-      "excerpt": "Understanding zero-knowledge proofs and their applications in privacy-preserving systems. From zk-SNARKs to zk-STARKs, exploring the mathematics of privacy.",
-      "tags": ["cryptography", "zero knowledge", "privacy", "zkp"],
-      "url": "./posts/zero-knowledge-proofs.html",
-      "readTime": "6 min read",
-      "author": "Prashish Phunyal"
-    },
-    {
-      "title": "Thoughts on Code Review",
-      "date": "2024-12-10",
-      "category": "fragments",
-      "excerpt": "Quick thoughts on effective code review practices. What makes a good review, common pitfalls, and building better development workflows.",
-      "tags": ["development", "code review", "software engineering", "best practices"],
-      "url": "./posts/thoughts-code-review.html",
-      "readTime": "2 min read",
-      "author": "Prashish Phunyal"
-    },
-    {
-      "title": "Understanding Graph Theory",
-      "date": "2024-12-05",
-      "category": "mathematics",
-      "excerpt": "An introduction to graph theory and its applications in computer science. From shortest paths to network analysis, exploring the mathematics of connections.",
-      "tags": ["mathematics", "graph theory", "algorithms", "networks"],
-      "url": "./posts/understanding-graph-theory.html",
       "readTime": "7 min read",
       "author": "Prashish Phunyal"
     }

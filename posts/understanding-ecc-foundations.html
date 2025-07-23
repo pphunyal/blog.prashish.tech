@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding ECC Mathematical Foundations | Prashish Phunyal</title>
+    <meta name="description" content="">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../src/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Theme Script -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+</head>
+<body>
+    <div class="container">
+        <!-- Theme Toggle -->
+        <div id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+            <button type="button" class="theme-toggle-btn" aria-label="Toggle dark/light mode">
+                <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="site-title">
+                    <a href="../index.html" class="site-title-link">Prashish</a>
+                </h1>
+                <nav class="social-nav">
+                    <a href="https://bsky.app/profile/prashishphunyal.bsky.social" target="_blank" rel="noopener noreferrer" class="social-link">
+                        Bluesky
+                    </a>
+                    <a href="https://github.com/pphunyal" target="_blank" rel="noopener noreferrer" class="social-link">
+                        GitHub
+                    </a>
+                    <a href="#newsletter" class="social-link">
+                        Newsletter
+                    </a>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main">
+            <article class="post-article">
+                <div class="post-header">
+                    <div class="post-meta">
+                        <span class="post-category-tag">mathematics</span>
+                        <time class="post-date" datetime="2025-01-20">January 20, 2025</time>
+                    </div>
+                    <h1 class="post-title">Understanding ECC Mathematical Foundations</h1>
+                    <div class="post-info">
+                        <span class="read-time">5 min read</span>
+                    </div>
+                </div>
+
+                <div class="post-content">
+                    <p>Elliptic Curve Cryptography (ECC) represents one of the most elegant intersections of pure mathematics and practical cryptography. While RSA relies on the difficulty of factoring large integers, ECC derives its security from the discrete logarithm problem on elliptic curves—a mathematical structure that offers equivalent security with significantly smaller key sizes.</p>
+<h2>What Are Elliptic Curves?</h2>
+<p>An elliptic curve is defined by the equation:</p>
+<pre><code>y² = x³ + ax + b
+</code></pre>
+<p>Where <code>a</code> and <code>b</code> are parameters that define the specific curve, and the discriminant <code>4a³ + 27b²</code> must be non-zero to ensure the curve is non-singular (smooth).</p>
+<h3>Visual Understanding</h3>
+<p>Unlike the familiar geometric circles or parabolas, elliptic curves have a distinctive shape:</p>
+<ul>
+<li>They&#39;re symmetric about the x-axis</li>
+<li>They can be either bounded (like an oval) or unbounded (extending to infinity)</li>
+<li>Every non-vertical line intersects the curve at most three points</li>
+</ul>
+<h2>The Group Law</h2>
+<p>The mathematical elegance of elliptic curves lies in their <strong>group structure</strong>. We can define an addition operation on points of the curve that satisfies the group axioms.</p>
+<h3>Point Addition Rules</h3>
+<ol>
+<li><strong>Identity Element</strong>: There&#39;s a special &quot;point at infinity&quot; (O) that acts as the identity</li>
+<li><strong>Addition of Two Distinct Points</strong>: Draw a line through P and Q, find the third intersection point R, then reflect R across the x-axis to get P + Q</li>
+<li><strong>Point Doubling</strong>: For P + P, draw the tangent line at P, find where it intersects the curve again, then reflect</li>
+</ol>
+<pre><code>P + Q = R (where R is the reflection of the third intersection point)
+P + O = P (identity property)
+P + (-P) = O (inverse property)
+</code></pre>
+<h2>Finite Field Arithmetic</h2>
+<p>In cryptographic applications, we work over finite fields rather than real numbers. The most common choice is the finite field <strong>Fp</strong> where p is a large prime.</p>
+<h3>Operations in Fp</h3>
+<p>All arithmetic is performed modulo p:</p>
+<ul>
+<li>Addition: <code>(a + b) mod p</code></li>
+<li>Multiplication: <code>(a × b) mod p</code></li>
+<li>Division: <code>a × b⁻¹ mod p</code> (where b⁻¹ is the modular inverse of b)</li>
+</ul>
+<h3>Example: Curve over F₂₃</h3>
+<p>Consider the curve <code>y² = x³ + x + 1</code> over F₂₃:</p>
+<pre><code class="language-python"># Point addition example in F₂₃
+p = 23
+a, b = 1, 1
+
+# Points on the curve
+P = (3, 10)
+Q = (9, 7)
+
+# Verify points are on curve
+assert (10**2) % p == (3**3 + 3 + 1) % p  # P is valid
+assert (7**2) % p == (9**3 + 9 + 1) % p   # Q is valid
+</code></pre>
+<h2>The Discrete Logarithm Problem</h2>
+<p>The security of ECC rests on the <strong>Elliptic Curve Discrete Logarithm Problem (ECDLP)</strong>:</p>
+<blockquote>
+<p>Given points P and Q on an elliptic curve, where Q = kP for some integer k, find k.</p>
+</blockquote>
+<h3>Why It&#39;s Hard</h3>
+<p>While computing Q = kP (scalar multiplication) is relatively fast using techniques like the double-and-add algorithm, the reverse operation—finding k given P and Q—is believed to be computationally infeasible for properly chosen curves and sufficiently large k.</p>
+<h2>Scalar Multiplication</h2>
+<p>The core operation in ECC is scalar multiplication: computing kP where k is a large integer and P is a point on the curve.</p>
+<h3>Double-and-Add Algorithm</h3>
+<pre><code class="language-python">def scalar_multiply(k, P):
+    &quot;&quot;&quot;Compute kP using double-and-add&quot;&quot;&quot;
+    if k == 0:
+        return POINT_AT_INFINITY
+    
+    result = POINT_AT_INFINITY
+    addend = P
+    
+    while k:
+        if k &amp; 1:  # If k is odd
+            result = point_add(result, addend)
+        addend = point_double(addend)
+        k &gt;&gt;= 1
+    
+    return result
+</code></pre>
+<p>This algorithm runs in O(log k) time, making it efficient even for 256-bit scalars.</p>
+<h2>Popular Curves in Practice</h2>
+<h3>secp256k1 (Bitcoin)</h3>
+<ul>
+<li>Used in Bitcoin and Ethereum</li>
+<li>Equation: <code>y² = x³ + 7</code> over Fp where p = 2²⁵⁶ - 2³² - 977</li>
+<li>Base point order: ~2²⁵⁶</li>
+</ul>
+<h3>Curve25519</h3>
+<ul>
+<li>Designed by Daniel J. Bernstein</li>
+<li>Montgomery curve form: <code>v² = u³ + 486662u² + u</code></li>
+<li>Optimized for high-speed, high-security applications</li>
+</ul>
+<h3>NIST P-256</h3>
+<ul>
+<li>Standardized by NIST</li>
+<li>Widely supported in TLS and other protocols</li>
+<li>Equation: <code>y² = x³ - 3x + b</code> over Fp</li>
+</ul>
+<h2>Security Considerations</h2>
+<h3>Curve Selection Criteria</h3>
+<ol>
+<li><strong>Large Prime Order</strong>: The order of the base point should be a large prime</li>
+<li><strong>No Special Form</strong>: Avoid curves with special mathematical properties that might enable attacks</li>
+<li><strong>Twist Security</strong>: The quadratic twist should also be secure</li>
+<li><strong>MOV Condition</strong>: The embedding degree should be large enough</li>
+</ol>
+<h3>Implementation Pitfalls</h3>
+<pre><code class="language-python"># Side-channel attack mitigation
+def secure_scalar_multiply(k, P):
+    &quot;&quot;&quot;Constant-time scalar multiplication&quot;&quot;&quot;
+    # Use techniques like Montgomery ladder
+    # Avoid branching on secret data
+    # Implement blinding countermeasures
+    pass
+</code></pre>
+<h2>Mathematical Deep Dive: Point Addition Formulas</h2>
+<p>For points P₁ = (x₁, y₁) and P₂ = (x₂, y₂) on curve y² = x³ + ax + b:</p>
+<h3>Case 1: Different Points (P₁ ≠ P₂)</h3>
+<pre><code>λ = (y₂ - y₁) / (x₂ - x₁)
+x₃ = λ² - x₁ - x₂
+y₃ = λ(x₁ - x₃) - y₁
+</code></pre>
+<h3>Case 2: Point Doubling (P₁ = P₂)</h3>
+<pre><code>λ = (3x₁² + a) / (2y₁)
+x₃ = λ² - 2x₁
+y₃ = λ(x₁ - x₃) - y₁
+</code></pre>
+<h2>Connection to Other Cryptographic Concepts</h2>
+<h3>ECDSA (Elliptic Curve Digital Signature Algorithm)</h3>
+<ul>
+<li>Uses scalar multiplication for key generation</li>
+<li>Security relies on ECDLP hardness</li>
+<li>Much smaller signatures than RSA</li>
+</ul>
+<h3>ECDH (Elliptic Curve Diffie-Hellman)</h3>
+<ul>
+<li>Key exchange protocol using ECC</li>
+<li>Both parties multiply their private key with the other&#39;s public key</li>
+<li>Results in shared secret due to commutativity: k₁(k₂P) = k₂(k₁P)</li>
+</ul>
+<h2>Implementation Example</h2>
+<pre><code class="language-python">class Point:
+    def __init__(self, x, y, curve):
+        self.x = x
+        self.y = y
+        self.curve = curve
+    
+    def __add__(self, other):
+        if self.is_infinity():
+            return other
+        if other.is_infinity():
+            return self
+        
+        if self.x == other.x:
+            if self.y == other.y:
+                return self.double()
+            else:
+                return Point.infinity()
+        
+        # Point addition formulas
+        s = ((other.y - self.y) * 
+             pow(other.x - self.x, -1, self.curve.p)) % self.curve.p
+        x3 = (s**2 - self.x - other.x) % self.curve.p
+        y3 = (s * (self.x - x3) - self.y) % self.curve.p
+        
+        return Point(x3, y3, self.curve)
+</code></pre>
+<h2>Future Directions</h2>
+<h3>Post-Quantum Considerations</h3>
+<p>While ECC is currently secure against classical computers, quantum computers running Shor&#39;s algorithm could break ECDLP. Research into post-quantum alternatives includes:</p>
+<ul>
+<li><strong>Isogeny-based cryptography</strong>: Using walks on supersingular isogeny graphs</li>
+<li><strong>Lattice-based cryptography</strong>: Based on problems like Learning With Errors (LWE)</li>
+<li><strong>Code-based cryptography</strong>: Using error-correcting codes</li>
+</ul>
+<h2>Conclusion</h2>
+<p>Elliptic Curve Cryptography demonstrates how deep mathematical concepts can solve practical problems. The elegant group law on elliptic curves, combined with the intractability of the discrete logarithm problem, provides a foundation for efficient and secure cryptographic systems.</p>
+<p>Understanding ECC&#39;s mathematical foundations isn&#39;t just academic—it&#39;s essential for implementing secure systems, choosing appropriate parameters, and recognizing potential vulnerabilities. As we move toward a post-quantum world, these mathematical insights become even more valuable for developing and evaluating new cryptographic approaches.</p>
+<p>The beauty of ECC lies not just in its mathematical elegance, but in how that elegance translates directly into practical security benefits: smaller keys, faster operations, and equivalent security to traditional approaches like RSA.</p>
+<hr>
+<p><em>For hands-on exploration, try implementing basic elliptic curve operations in your favorite programming language, starting with small finite fields to verify the mathematical properties discussed above.</em></p>
+
+                </div>
+
+                <div class="post-footer">
+                    <div class="post-tags">
+                        <span class="tag">mathematics</span><span class="tag">cryptography</span><span class="tag">elliptic curves</span><span class="tag">ecc</span>
+                    </div>
+                    <div class="post-navigation">
+                        <a href="../index.html" class="nav-link">← Back to Posts</a>
+                    </div>
+                </div>
+            </article>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2025 Prashish Phunyal. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <!-- Theme Toggle Script -->
+    <script>
+        const themeToggle = document.getElementById('theme-toggle');
+        
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+    </script>
+</body>
+</html>

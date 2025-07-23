@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Digital Signatures | Prashish Phunyal</title>
+    <meta name="description" content="">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../src/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Theme Script -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+</head>
+<body>
+    <div class="container">
+        <!-- Theme Toggle -->
+        <div id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+            <button type="button" class="theme-toggle-btn" aria-label="Toggle dark/light mode">
+                <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="site-title">
+                    <a href="../index.html" class="site-title-link">Prashish</a>
+                </h1>
+                <nav class="social-nav">
+                    <a href="https://bsky.app/profile/prashishphunyal.bsky.social" target="_blank" rel="noopener noreferrer" class="social-link">
+                        Bluesky
+                    </a>
+                    <a href="https://github.com/pphunyal" target="_blank" rel="noopener noreferrer" class="social-link">
+                        GitHub
+                    </a>
+                    <a href="#newsletter" class="social-link">
+                        Newsletter
+                    </a>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main">
+            <article class="post-article">
+                <div class="post-header">
+                    <div class="post-meta">
+                        <span class="post-category-tag">cryptography</span>
+                        <time class="post-date" datetime="2025-01-25">January 25, 2025</time>
+                    </div>
+                    <h1 class="post-title">Understanding Digital Signatures</h1>
+                    <div class="post-info">
+                        <span class="read-time">5 min read</span>
+                    </div>
+                </div>
+
+                <div class="post-content">
+                    <p>Digital signatures represent one of cryptography&#39;s most elegant solutions to a fundamental problem: how do you prove authenticity and integrity in a digital world where perfect copies are trivial to create? Unlike physical signatures, which rely on the difficulty of precise forgery, digital signatures derive their security from mathematical hardness assumptions.</p>
+<h2>The Authentication Problem</h2>
+<p>In the physical world, authentication often relies on:</p>
+<ul>
+<li><strong>Something you are</strong> (biometrics)</li>
+<li><strong>Something you have</strong> (physical token)</li>
+<li><strong>Something you know</strong> (password)</li>
+<li><strong>Something you write</strong> (handwritten signature)</li>
+</ul>
+<p>Digital environments eliminate most of these options. How do you prove identity when interaction is mediated by computers? How do you ensure a message hasn&#39;t been tampered with during transmission?</p>
+<p>Digital signatures solve both problems simultaneously through <strong>public-key cryptography</strong>.</p>
+<h2>Mathematical Foundation</h2>
+<h3>The Trapdoor Function Concept</h3>
+<p>Digital signatures rely on <strong>trapdoor functions</strong>—mathematical operations that are:</p>
+<ol>
+<li><strong>Easy to compute</strong> in one direction</li>
+<li><strong>Hard to reverse</strong> without special knowledge (the trapdoor)</li>
+<li><strong>Easy to reverse</strong> with the trapdoor</li>
+</ol>
+<pre><code class="language-python"># Conceptual trapdoor function
+def trapdoor_function(input_value, public_parameter):
+    &quot;&quot;&quot;Easy to compute&quot;&quot;&quot;
+    return pow(input_value, public_parameter, large_modulus)
+
+def reverse_trapdoor(output_value, private_parameter):
+    &quot;&quot;&quot;Easy with private key, impossible without&quot;&quot;&quot;
+    return pow(output_value, private_parameter, large_modulus)
+</code></pre>
+<h3>Digital Signature Properties</h3>
+<p>A secure digital signature scheme must provide:</p>
+<ol>
+<li><strong>Authentication</strong>: Message came from claimed sender</li>
+<li><strong>Integrity</strong>: Message hasn&#39;t been modified</li>
+<li><strong>Non-repudiation</strong>: Sender cannot deny signing</li>
+<li><strong>Unforgeability</strong>: Others cannot create valid signatures</li>
+</ol>
+<h2>RSA Signatures</h2>
+<h3>RSA Algorithm Basics</h3>
+<p>RSA (Rivest-Shamir-Adleman) enables both encryption and digital signatures through modular exponentiation.</p>
+<pre><code class="language-python">import random
+from math import gcd
+
+def generate_rsa_keypair(bit_length=2048):
+    &quot;&quot;&quot;Generate RSA public/private key pair&quot;&quot;&quot;
+    
+    # Step 1: Generate two large primes
+    p = generate_large_prime(bit_length // 2)
+    q = generate_large_prime(bit_length // 2)
+    
+    # Step 2: Compute modulus
+    n = p * q
+    
+    # Step 3: Compute Euler&#39;s totient
+    phi_n = (p - 1) * (q - 1)
+    
+    # Step 4: Choose public exponent
+    e = 65537  # Common choice (2^16 + 1)
+    assert gcd(e, phi_n) == 1
+    
+    # Step 5: Compute private exponent
+    d = mod_inverse(e, phi_n)
+    
+    return {
+        &#39;public_key&#39;: (n, e),
+        &#39;private_key&#39;: (n, d),
+        &#39;p&#39;: p, &#39;q&#39;: q  # Keep secret!
+    }
+
+def mod_inverse(a, m):
+    &quot;&quot;&quot;Extended Euclidean Algorithm for modular inverse&quot;&quot;&quot;
+    if gcd(a, m) != 1:
+        return None
+    
+    # Extended Euclidean Algorithm
+    def extended_gcd(a, b):
+        if a == 0:
+            return b, 0, 1
+        gcd_val, x1, y1 = extended_gcd(b % a, a)
+        x = y1 - (b // a) * x1
+        y = x1
+        return gcd_val, x, y
+    
+    _, x, _ = extended_gcd(a % m, m)
+    return (x % m + m) % m
+</code></pre>
+<h3>RSA Signature Generation</h3>
+<pre><code class="language-python">import hashlib
+
+def rsa_sign(message, private_key):
+    &quot;&quot;&quot;Generate RSA signature for message&quot;&quot;&quot;
+    n, d = private_key
+    
+    # Step 1: Hash the message
+    message_bytes = message.encode(&#39;utf-8&#39;)
+    hash_object = hashlib.sha256(message_bytes)
+    message_hash = int.from_bytes(hash_object.digest(), &#39;big&#39;)
+    
+    # Step 2: Apply PKCS#1 v1.5 padding
+    padded_hash = pkcs1_v15_pad(hash_object.digest(), n.bit_length() // 8)
+    
+    # Step 3: Convert to integer
+    padded_int = int.from_bytes(padded_hash, &#39;big&#39;)
+    
+    # Step 4: Sign (modular exponentiation)
+    signature = pow(padded_int, d, n)
+    
+    return signature
+
+def rsa_verify(message, signature, public_key):
+    &quot;&quot;&quot;Verify RSA signature&quot;&quot;&quot;
+    n, e = public_key
+    
+    # Step 1: Hash the message
+    message_bytes = message.encode(&#39;utf-8&#39;)
+    hash_object = hashlib.sha256(message_bytes)
+    expected_hash = hash_object.digest()
+    
+    # Step 2: Verify signature (modular exponentiation)
+    decrypted = pow(signature, e, n)
+    
+    # Step 3: Convert back to bytes
+    decrypted_bytes = decrypted.to_bytes(n.bit_length() // 8, &#39;big&#39;)
+    
+    # Step 4: Remove padding and compare
+    try:
+        recovered_hash = pkcs1_v15_unpad(decrypted_bytes)
+        return recovered_hash == expected_hash
+    except:
+        return False
+</code></pre>
+<h3>PKCS#1 Padding</h3>
+<p>PKCS#1 v1.5 padding is crucial for RSA signature security:</p>
+<pre><code class="language-python">def pkcs1_v15_pad(hash_digest, key_length):
+    &quot;&quot;&quot;Apply PKCS#1 v1.5 padding to hash digest&quot;&quot;&quot;
+    
+    # DigestInfo for SHA-256
+    sha256_oid = bytes([
+        0x30, 0x31, 0x30, 0x0d, 0x06, 0x09, 0x60, 0x86,
+        0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x01, 0x05,
+        0x00, 0x04, 0x20
+    ])
+    
+    digest_info = sha256_oid + hash_digest
+    
+    # Calculate padding length
+    padding_length = key_length - len(digest_info) - 3
+    
+    if padding_length &lt; 8:
+        raise ValueError(&quot;Key too short for PKCS#1 padding&quot;)
+    
+    # Construct padded message
+    padded = bytes([0x00, 0x01]) + bytes([0xFF] * padding_length) + bytes([0x00]) + digest_info
+    
+    return padded
+
+def pkcs1_v15_unpad(padded_data):
+    &quot;&quot;&quot;Remove PKCS#1 v1.5 padding&quot;&quot;&quot;
+    if len(padded_data) &lt; 11:
+        raise ValueError(&quot;Invalid padding&quot;)
+    
+    if padded_data[0] != 0x00 or padded_data[1] != 0x01:
+        raise ValueError(&quot;Invalid padding header&quot;)
+    
+    # Find separator (0x00 after 0xFF bytes)
+    separator_index = None
+    for i in range(2, len(padded_data)):
+        if padded_data[i] == 0x00:
+            separator_index = i
+            break
+        elif padded_data[i] != 0xFF:
+            raise ValueError(&quot;Invalid padding&quot;)
+    
+    if separator_index is None or separator_index &lt; 10:
+        raise ValueError(&quot;Invalid padding structure&quot;)
+    
+    # Extract DigestInfo
+    digest_info = padded_data[separator_index + 1:]
+    
+    # Verify DigestInfo structure and extract hash
+    sha256_oid = bytes([
+        0x30, 0x31, 0x30, 0x0d, 0x06, 0x09, 0x60, 0x86,
+        0x48, 0x01, 0x65, 0x03, 0x04, 0x02, 0x01, 0x05,
+        0x00, 0x04, 0x20
+    ])
+    
+    if not digest_info.startswith(sha256_oid):
+        raise ValueError(&quot;Invalid DigestInfo&quot;)
+    
+    return digest_info[len(sha256_oid):]
+</code></pre>
+<h2>Elliptic Curve Digital Signatures (ECDSA)</h2>
+<h3>Why Elliptic Curves?</h3>
+<p>ECDSA offers the same security as RSA with much smaller key sizes:</p>
+<table>
+<thead>
+<tr>
+<th>Security Level</th>
+<th>RSA Key Size</th>
+<th>ECC Key Size</th>
+<th>Ratio</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>80 bits</td>
+<td>1024 bits</td>
+<td>160 bits</td>
+<td>6:1</td>
+</tr>
+<tr>
+<td>112 bits</td>
+<td>2048 bits</td>
+<td>224 bits</td>
+<td>9:1</td>
+</tr>
+<tr>
+<td>128 bits</td>
+<td>3072 bits</td>
+<td>256 bits</td>
+<td>12:1</td>
+</tr>
+<tr>
+<td>192 bits</td>
+<td>7680 bits</td>
+<td>384 bits</td>
+<td>20:1</td>
+</tr>
+<tr>
+<td>256 bits</td>
+<td>15360 bits</td>
+<td>512 bits</td>
+<td>30:1</td>
+</tr>
+</tbody></table>
+<h3>Elliptic Curve Mathematics</h3>
+<pre><code class="language-python">class EllipticCurve:
+    &quot;&quot;&quot;Elliptic curve y² = x³ + ax + b (mod p)&quot;&quot;&quot;
+    
+    def __init__(self, a, b, p):
+        self.a = a
+        self.b = b
+        self.p = p
+    
+    def is_on_curve(self, point):
+        &quot;&quot;&quot;Check if point is on the curve&quot;&quot;&quot;
+        if point is None:  # Point at infinity
+            return True
+        
+        x, y = point
+        return (y * y) % self.p == (x * x * x + self.a * x + self.b) % self.p
+    
+    def point_add(self, p1, p2):
+        &quot;&quot;&quot;Add two points on the elliptic curve&quot;&quot;&quot;
+        if p1 is None:
+            return p2
+        if p2 is None:
+            return p1
+        
+        x1, y1 = p1
+        x2, y2 = p2
+        
+        if x1 == x2:
+            if y1 == y2:
+                # Point doubling
+                s = (3 * x1 * x1 + self.a) * mod_inverse(2 * y1, self.p) % self.p
+            else:
+                # Points are inverses
+                return None
+        else:
+            # Point addition
+            s = (y2 - y1) * mod_inverse(x2 - x1, self.p) % self.p
+        
+        x3 = (s * s - x1 - x2) % self.p
+        y3 = (s * (x1 - x3) - y1) % self.p
+        
+        return (x3, y3)
+    
+    def point_multiply(self, k, point):
+        &quot;&quot;&quot;Scalar multiplication k * point&quot;&quot;&quot;
+        if k == 0:
+            return None
+        
+        result = None
+        addend = point
+        
+        while k:
+            if k &amp; 1:
+                result = self.point_add(result, addend)
+            addend = self.point_add(addend, addend)
+            k &gt;&gt;= 1
+        
+        return result
+</code></pre>
+<h3>ECDSA Implementation</h3>
+<pre><code class="language-python">import secrets
+
+class ECDSA:
+    def __init__(self, curve, generator, order):
+        self.curve = curve
+        self.G = generator  # Generator point
+        self.n = order      # Order of generator point
+    
+    def generate_keypair(self):
+        &quot;&quot;&quot;Generate ECDSA key pair&quot;&quot;&quot;
+        # Private key: random integer in [1, n-1]
+        private_key = secrets.randbelow(self.n - 1) + 1
+        
+        # Public key: private_key * G
+        public_key = self.curve.point_multiply(private_key, self.G)
+        
+        return private_key, public_key
+    
+    def sign(self, message_hash, private_key):
+        &quot;&quot;&quot;Generate ECDSA signature&quot;&quot;&quot;
+        z = int.from_bytes(message_hash, &#39;big&#39;)
+        
+        while True:
+            # Step 1: Generate random nonce k
+            k = secrets.randbelow(self.n - 1) + 1
+            
+            # Step 2: Calculate r = (k * G).x mod n
+            k_point = self.curve.point_multiply(k, self.G)
+            r = k_point[0] % self.n
+            
+            if r == 0:
+                continue
+            
+            # Step 3: Calculate s = k⁻¹(z + r * private_key) mod n
+            k_inv = mod_inverse(k, self.n)
+            s = (k_inv * (z + r * private_key)) % self.n
+            
+            if s == 0:
+                continue
+            
+            return (r, s)
+    
+    def verify(self, message_hash, signature, public_key):
+        &quot;&quot;&quot;Verify ECDSA signature&quot;&quot;&quot;
+        r, s = signature
+        
+        # Check signature format
+        if not (1 &lt;= r &lt; self.n and 1 &lt;= s &lt; self.n):
+            return False
+        
+        z = int.from_bytes(message_hash, &#39;big&#39;)
+        
+        # Calculate verification values
+        w = mod_inverse(s, self.n)
+        u1 = (z * w) % self.n
+        u2 = (r * w) % self.n
+        
+        # Calculate verification point
+        point1 = self.curve.point_multiply(u1, self.G)
+        point2 = self.curve.point_multiply(u2, public_key)
+        verification_point = self.curve.point_add(point1, point2)
+        
+        if verification_point is None:
+            return False
+        
+        # Verify r component
+        return verification_point[0] % self.n == r
+</code></pre>
+<h3>secp256k1 Parameters</h3>
+<p>Bitcoin uses the secp256k1 curve:</p>
+<pre><code class="language-python"># secp256k1 parameters
+p = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F
+a = 0
+b = 7
+Gx = 0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798
+Gy = 0x483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8
+n = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141
+
+# Create secp256k1 curve
+secp256k1 = EllipticCurve(a, b, p)
+secp256k1_ecdsa = ECDSA(secp256k1, (Gx, Gy), n)
+</code></pre>
+<h2>Advanced Signature Schemes</h2>
+<h3>Schnorr Signatures</h3>
+<p>Schnorr signatures offer several advantages over ECDSA:</p>
+<pre><code class="language-python">class SchnorrSignature:
+    def __init__(self, curve, generator, order):
+        self.curve = curve
+        self.G = generator
+        self.n = order
+    
+    def sign(self, message, private_key):
+        &quot;&quot;&quot;Generate Schnorr signature&quot;&quot;&quot;
+        # Generate random nonce
+        k = secrets.randbelow(self.n - 1) + 1
+        
+        # Calculate R = k * G
+        R = self.curve.point_multiply(k, self.G)
+        
+        # Calculate challenge e = H(R || P || m)
+        public_key = self.curve.point_multiply(private_key, self.G)
+        challenge_input = (
+            R[0].to_bytes(32, &#39;big&#39;) +
+            public_key[0].to_bytes(32, &#39;big&#39;) +
+            message
+        )
+        e = int.from_bytes(hashlib.sha256(challenge_input).digest(), &#39;big&#39;) % self.n
+        
+        # Calculate s = k + e * private_key
+        s = (k + e * private_key) % self.n
+        
+        return (R[0], s)
+    
+    def verify(self, message, signature, public_key):
+        &quot;&quot;&quot;Verify Schnorr signature&quot;&quot;&quot;
+        r, s = signature
+        
+        # Reconstruct challenge
+        challenge_input = (
+            r.to_bytes(32, &#39;big&#39;) +
+            public_key[0].to_bytes(32, &#39;big&#39;) +
+            message
+        )
+        e = int.from_bytes(hashlib.sha256(challenge_input).digest(), &#39;big&#39;) % self.n
+        
+        # Verify s * G = R + e * P
+        left_side = self.curve.point_multiply(s, self.G)
+        
+        R_point = (r, self.calculate_y_coordinate(r))
+        right_side_1 = R_point
+        right_side_2 = self.curve.point_multiply(e, public_key)
+        right_side = self.curve.point_add(right_side_1, right_side_2)
+        
+        return left_side == right_side
+</code></pre>
+<p><strong>Schnorr Advantages:</strong></p>
+<ul>
+<li><strong>Linear aggregation</strong>: Multiple signatures can be combined</li>
+<li><strong>Smaller signatures</strong>: More efficient than ECDSA</li>
+<li><strong>Provable security</strong>: Security proof in random oracle model</li>
+<li><strong>Non-malleability</strong>: Signatures cannot be modified to create valid variants</li>
+</ul>
+<h3>Multi-Signature Schemes</h3>
+<pre><code class="language-python">class MultiSignature:
+    def __init__(self, signature_scheme):
+        self.sig_scheme = signature_scheme
+    
+    def aggregate_keys(self, public_keys):
+        &quot;&quot;&quot;Aggregate multiple public keys&quot;&quot;&quot;
+        result = None
+        for pk in public_keys:
+            result = self.sig_scheme.curve.point_add(result, pk)
+        return result
+    
+    def threshold_sign(self, message, private_keys, threshold):
+        &quot;&quot;&quot;Create threshold signature (k-of-n)&quot;&quot;&quot;
+        if len(private_keys) &lt; threshold:
+            raise ValueError(&quot;Insufficient signatures for threshold&quot;)
+        
+        # Use Shamir&#39;s Secret Sharing for threshold schemes
+        signatures = []
+        for i, private_key in enumerate(private_keys[:threshold]):
+            sig = self.sig_scheme.sign(message, private_key)
+            signatures.append((i + 1, sig))  # Include participant ID
+        
+        return self.lagrange_interpolate_signatures(signatures, threshold)
+    
+    def lagrange_interpolate_signatures(self, signatures, threshold):
+        &quot;&quot;&quot;Combine threshold signatures using Lagrange interpolation&quot;&quot;&quot;
+        # Simplified version - real implementation needs careful coordinate handling
+        combined_signature = None
+        
+        for i, (participant_id, signature) in enumerate(signatures):
+            # Calculate Lagrange coefficient
+            coefficient = 1
+            for j, (other_id, _) in enumerate(signatures):
+                if i != j:
+                    coefficient *= other_id
+                    coefficient *= mod_inverse(other_id - participant_id, self.sig_scheme.n)
+                    coefficient %= self.sig_scheme.n
+            
+            # Scale signature by coefficient and combine
+            # (Implementation details depend on specific signature scheme)
+        
+        return combined_signature
+</code></pre>
+<h2>Real-World Applications</h2>
+<h3>TLS/SSL Certificates</h3>
+<pre><code class="language-python">def verify_certificate_chain(certificate_chain, root_ca_public_key):
+    &quot;&quot;&quot;Verify a certificate chain&quot;&quot;&quot;
+    
+    for i in range(len(certificate_chain) - 1):
+        current_cert = certificate_chain[i]
+        issuer_cert = certificate_chain[i + 1]
+        
+        # Extract signature and public key
+        signature = extract_signature(current_cert)
+        issuer_public_key = extract_public_key(issuer_cert)
+        
+        # Verify signature
+        if not rsa_verify(current_cert.tbs_certificate, signature, issuer_public_key):
+            return False
+    
+    # Verify root certificate against trusted CA
+    root_cert = certificate_chain[-1]
+    root_signature = extract_signature(root_cert)
+    
+    return rsa_verify(root_cert.tbs_certificate, root_signature, root_ca_public_key)
+
+def extract_certificate_info(certificate):
+    &quot;&quot;&quot;Extract information from X.509 certificate&quot;&quot;&quot;
+    return {
+        &#39;subject&#39;: certificate.subject,
+        &#39;issuer&#39;: certificate.issuer,
+        &#39;valid_from&#39;: certificate.not_valid_before,
+        &#39;valid_until&#39;: certificate.not_valid_after,
+        &#39;public_key&#39;: certificate.public_key(),
+        &#39;signature_algorithm&#39;: certificate.signature_algorithm_oid,
+        &#39;serial_number&#39;: certificate.serial_number
+    }
+</code></pre>
+<h3>Blockchain Transactions</h3>
+<pre><code class="language-python">def create_bitcoin_transaction(inputs, outputs, private_keys):
+    &quot;&quot;&quot;Create and sign Bitcoin transaction&quot;&quot;&quot;
+    
+    # Create transaction structure
+    transaction = {
+        &#39;version&#39;: 1,
+        &#39;inputs&#39;: inputs,
+        &#39;outputs&#39;: outputs,
+        &#39;locktime&#39;: 0
+    }
+    
+    # Sign each input
+    for i, (input_data, private_key) in enumerate(zip(inputs, private_keys)):
+        # Create signature hash
+        sig_hash = create_signature_hash(transaction, i, input_data[&#39;script_pubkey&#39;])
+        
+        # Sign with ECDSA
+        signature = secp256k1_ecdsa.sign(sig_hash, private_key)
+        
+        # Create script_sig
+        public_key = secp256k1.point_multiply(private_key, (Gx, Gy))
+        script_sig = create_p2pkh_script_sig(signature, public_key)
+        
+        transaction[&#39;inputs&#39;][i][&#39;script_sig&#39;] = script_sig
+    
+    return transaction
+
+def create_signature_hash(transaction, input_index, script_pubkey):
+    &quot;&quot;&quot;Create signature hash for transaction input&quot;&quot;&quot;
+    # Simplified version of Bitcoin&#39;s signature hash calculation
+    temp_transaction = copy.deepcopy(transaction)
+    
+    # Clear all input scripts
+    for input_data in temp_transaction[&#39;inputs&#39;]:
+        input_data[&#39;script_sig&#39;] = b&#39;&#39;
+    
+    # Set current input script to script_pubkey
+    temp_transaction[&#39;inputs&#39;][input_index][&#39;script_sig&#39;] = script_pubkey
+    
+    # Serialize and hash
+    serialized = serialize_transaction(temp_transaction)
+    return hashlib.sha256(hashlib.sha256(serialized).digest()).digest()
+</code></pre>
+<h3>Code Signing</h3>
+<pre><code class="language-python">def sign_software_package(package_path, private_key, certificate):
+    &quot;&quot;&quot;Sign software package for distribution&quot;&quot;&quot;
+    
+    # Calculate package hash
+    package_hash = calculate_file_hash(package_path)
+    
+    # Create signature
+    signature = rsa_sign(package_hash.hex(), private_key)
+    
+    # Create signed manifest
+    manifest = {
+        &#39;package_hash&#39;: package_hash.hex(),
+        &#39;signature&#39;: signature,
+        &#39;certificate&#39;: certificate,
+        &#39;timestamp&#39;: time.time(),
+        &#39;algorithm&#39;: &#39;RSA-SHA256&#39;
+    }
+    
+    return manifest
+
+def verify_software_package(package_path, manifest, trusted_ca_keys):
+    &quot;&quot;&quot;Verify signed software package&quot;&quot;&quot;
+    
+    # Verify certificate chain
+    if not verify_certificate_chain(manifest[&#39;certificate&#39;], trusted_ca_keys):
+        return False
+    
+    # Extract public key from certificate
+    public_key = extract_public_key(manifest[&#39;certificate&#39;][0])
+    
+    # Verify package integrity
+    current_hash = calculate_file_hash(package_path)
+    if current_hash.hex() != manifest[&#39;package_hash&#39;]:
+        return False
+    
+    # Verify signature
+    return rsa_verify(manifest[&#39;package_hash&#39;], manifest[&#39;signature&#39;], public_key)
+</code></pre>
+<h2>Security Considerations</h2>
+<h3>Nonce Generation</h3>
+<p><strong>Critical</strong>: Nonce reuse in ECDSA completely breaks security:</p>
+<pre><code class="language-python">def exploit_nonce_reuse(message1, signature1, message2, signature2, public_key):
+    &quot;&quot;&quot;Demonstrate private key recovery from nonce reuse&quot;&quot;&quot;
+    r1, s1 = signature1
+    r2, s2 = signature2
+    
+    # If r1 == r2, same nonce was used
+    if r1 != r2:
+        return None
+    
+    z1 = int.from_bytes(hashlib.sha256(message1).digest(), &#39;big&#39;)
+    z2 = int.from_bytes(hashlib.sha256(message2).digest(), &#39;big&#39;)
+    
+    # Recover nonce: k = (z1 - z2) / (s1 - s2) mod n
+    numerator = (z1 - z2) % secp256k1_ecdsa.n
+    denominator = (s1 - s2) % secp256k1_ecdsa.n
+    k = (numerator * mod_inverse(denominator, secp256k1_ecdsa.n)) % secp256k1_ecdsa.n
+    
+    # Recover private key: d = (s1 * k - z1) / r1 mod n
+    private_key = ((s1 * k - z1) * mod_inverse(r1, secp256k1_ecdsa.n)) % secp256k1_ecdsa.n
+    
+    return private_key
+
+# Secure nonce generation
+def secure_nonce_generation(private_key, message_hash):
+    &quot;&quot;&quot;RFC 6979 deterministic nonce generation&quot;&quot;&quot;
+    # Simplified version - real implementation follows RFC 6979
+    # Uses HMAC-based key derivation for deterministic but unpredictable nonces
+    
+    k = hmac.new(
+        private_key.to_bytes(32, &#39;big&#39;),
+        message_hash,
+        hashlib.sha256
+    ).digest()
+    
+    return int.from_bytes(k, &#39;big&#39;) % secp256k1_ecdsa.n
+</code></pre>
+<h3>Side-Channel Attacks</h3>
+<pre><code class="language-python">def constant_time_point_multiply(k, point, curve):
+    &quot;&quot;&quot;Constant-time scalar multiplication (simplified)&quot;&quot;&quot;
+    # Use Montgomery ladder or similar technique
+    # to avoid timing side-channels
+    
+    result = None
+    addend = point
+    
+    # Process all bits to maintain constant time
+    for i in range(256):  # For 256-bit scalars
+        bit = (k &gt;&gt; i) &amp; 1
+        
+        # Conditional addition without branching
+        if bit:
+            result = curve.point_add(result, addend)
+        
+        addend = curve.point_add(addend, addend)
+    
+    return result
+
+def blinded_rsa_signature(message_hash, private_key, public_key):
+    &quot;&quot;&quot;RSA signature with blinding against timing attacks&quot;&quot;&quot;
+    n, d = private_key
+    n_pub, e = public_key
+    
+    # Generate random blinding factor
+    r = secrets.randbelow(n - 1) + 1
+    while gcd(r, n) != 1:
+        r = secrets.randbelow(n - 1) + 1
+    
+    # Blind the message
+    blinded_message = (message_hash * pow(r, e, n)) % n
+    
+    # Sign blinded message
+    blinded_signature = pow(blinded_message, d, n)
+    
+    # Unblind the signature
+    r_inv = mod_inverse(r, n)
+    signature = (blinded_signature * r_inv) % n
+    
+    return signature
+</code></pre>
+<h2>Post-Quantum Cryptography</h2>
+<h3>Lattice-Based Signatures</h3>
+<pre><code class="language-python">def lattice_based_signature_concept():
+    &quot;&quot;&quot;Conceptual overview of lattice-based signatures&quot;&quot;&quot;
+    
+    # CRYSTALS-Dilithium approach (simplified)
+    class LatticeSignature:
+        def __init__(self, security_parameter):
+            self.n = 256  # Polynomial degree
+            self.q = 8380417  # Modulus
+            self.k = 4  # Matrix dimensions
+            self.l = 4
+            
+        def key_generation(self):
+            # Generate random matrix A
+            A = self.random_matrix(self.k, self.l)
+            
+            # Generate secret vectors s1, s2
+            s1 = self.random_small_vector(self.l)
+            s2 = self.random_small_vector(self.k)
+            
+            # Compute public key t = A*s1 + s2
+            t = self.matrix_vector_multiply(A, s1) + s2
+            
+            return {
+                &#39;public_key&#39;: (A, t),
+                &#39;private_key&#39;: (s1, s2)
+            }
+        
+        def sign(self, message, private_key):
+            s1, s2 = private_key
+            
+            # Fiat-Shamir with rejection sampling
+            while True:
+                # Sample random vector y
+                y = self.random_vector(self.l)
+                
+                # Compute w = A*y
+                w = self.matrix_vector_multiply(self.A, y)
+                
+                # Compute challenge c = H(w || message)
+                c = self.hash_to_challenge(w, message)
+                
+                # Compute z = y + c*s1
+                z = y + self.scalar_multiply(c, s1)
+                
+                # Rejection sampling check
+                if self.rejection_check(z, y, c, s1):
+                    continue
+                
+                return (z, c)
+</code></pre>
+<h3>Hash-Based Signatures</h3>
+<pre><code class="language-python">class MerkleSignature:
+    &quot;&quot;&quot;Simplified Merkle signature scheme&quot;&quot;&quot;
+    
+    def __init__(self, tree_height):
+        self.height = tree_height
+        self.num_signatures = 2 ** tree_height
+    
+    def generate_keypair(self):
+        &quot;&quot;&quot;Generate Merkle signature key pair&quot;&quot;&quot;
+        
+        # Generate one-time signature key pairs
+        ots_keypairs = []
+        public_keys = []
+        
+        for i in range(self.num_signatures):
+            # Generate Winternitz OTS key pair
+            ots_private, ots_public = self.winternitz_keygen()
+            ots_keypairs.append((ots_private, ots_public))
+            public_keys.append(ots_public)
+        
+        # Build Merkle tree
+        merkle_tree = self.build_merkle_tree(public_keys)
+        
+        return {
+            &#39;private_key&#39;: ots_keypairs,
+            &#39;public_key&#39;: merkle_tree.root,
+            &#39;tree&#39;: merkle_tree
+        }
+    
+    def sign(self, message, index, private_key):
+        &quot;&quot;&quot;Sign message with specified OTS key&quot;&quot;&quot;
+        ots_keypairs = private_key
+        
+        if index &gt;= len(ots_keypairs):
+            raise ValueError(&quot;Index out of range&quot;)
+        
+        # Sign with one-time signature
+        ots_private, ots_public = ots_keypairs[index]
+        ots_signature = self.winternitz_sign(message, ots_private)
+        
+        # Generate authentication path
+        auth_path = self.get_authentication_path(index)
+        
+        return {
+            &#39;ots_signature&#39;: ots_signature,
+            &#39;ots_public_key&#39;: ots_public,
+            &#39;auth_path&#39;: auth_path,
+            &#39;index&#39;: index
+        }
+</code></pre>
+<h2>Future Directions</h2>
+<h3>Aggregate Signatures</h3>
+<pre><code class="language-python">def aggregate_schnorr_signatures(signatures, public_keys, messages):
+    &quot;&quot;&quot;Aggregate multiple Schnorr signatures&quot;&quot;&quot;
+    
+    # Compute aggregation coefficient for each signature
+    aggregated_s = 0
+    
+    for i, (sig, pubkey, message) in enumerate(zip(signatures, public_keys, messages)):
+        r, s = sig
+        
+        # Compute aggregation coefficient
+        coeff_input = (
+            pubkey[0].to_bytes(32, &#39;big&#39;) +
+            message +
+            i.to_bytes(4, &#39;big&#39;)
+        )
+        coeff = int.from_bytes(hashlib.sha256(coeff_input).digest(), &#39;big&#39;)
+        
+        # Aggregate s values
+        aggregated_s = (aggregated_s + coeff * s) % secp256k1_ecdsa.n
+    
+    # Use first signature&#39;s r value (simplified)
+    aggregated_r = signatures[0][0]
+    
+    return (aggregated_r, aggregated_s)
+</code></pre>
+<h3>Threshold Signatures</h3>
+<pre><code class="language-python">class ThresholdSignature:
+    &quot;&quot;&quot;Threshold signature scheme&quot;&quot;&quot;
+    
+    def __init__(self, threshold, num_parties):
+        self.t = threshold
+        self.n = num_parties
+    
+    def distributed_key_generation(self):
+        &quot;&quot;&quot;Generate shared secret key using VSS&quot;&quot;&quot;
+        
+        # Each party generates a polynomial
+        polynomials = []
+        for i in range(self.n):
+            # Random polynomial of degree t-1
+            coeffs = [secrets.randbelow(secp256k1_ecdsa.n) for _ in range(self.t)]
+            polynomials.append(coeffs)
+        
+        # Each party computes their secret share
+        secret_shares = []
+        for i in range(self.n):
+            share = 0
+            for poly in polynomials:
+                # Evaluate polynomial at point i+1
+                eval_result = 0
+                for j, coeff in enumerate(poly):
+                    eval_result = (eval_result + coeff * pow(i + 1, j, secp256k1_ecdsa.n)) % secp256k1_ecdsa.n
+                share = (share + eval_result) % secp256k1_ecdsa.n
+            secret_shares.append(share)
+        
+        # Compute public key
+        public_key_shares = []
+        for share in secret_shares:
+            pk_share = secp256k1.point_multiply(share, (Gx, Gy))
+            public_key_shares.append(pk_share)
+        
+        return secret_shares, public_key_shares
+</code></pre>
+<h2>Conclusion</h2>
+<p>Digital signatures represent the mathematical foundation of trust in digital systems. From RSA&#39;s pioneering use of trapdoor functions to ECDSA&#39;s elliptic curve efficiency, from Schnorr&#39;s elegant linearity to post-quantum lattice-based schemes, each advancement addresses specific security, efficiency, or quantum-resistance requirements.</p>
+<p><strong>Key Takeaways:</strong></p>
+<ol>
+<li><p><strong>Mathematical Security</strong>: Digital signatures derive security from computational hardness assumptions—factoring large integers (RSA), discrete logarithm problem (DSA/ECDSA), or lattice problems (post-quantum).</p>
+</li>
+<li><p><strong>Implementation Matters</strong>: Even mathematically secure schemes can fail due to implementation flaws—nonce reuse, timing attacks, or inadequate random number generation.</p>
+</li>
+<li><p><strong>Trade-offs Everywhere</strong>: Signature size, verification time, key generation speed, and quantum resistance must be balanced based on application requirements.</p>
+</li>
+<li><p><strong>Future-Proofing</strong>: Post-quantum cryptography preparations are essential as quantum computers threaten current schemes.</p>
+</li>
+<li><p><strong>Beyond Authentication</strong>: Modern signature schemes enable complex protocols—threshold signatures, aggregate signatures, and zero-knowledge proofs.</p>
+</li>
+</ol>
+<p>Understanding digital signatures deeply—from mathematical foundations through implementation details to real-world applications—provides the knowledge necessary to build secure systems in an increasingly digital world.</p>
+<p>The elegance of digital signatures lies in their ability to provide mathematical certainty in an uncertain world, transforming the ancient concept of authentication into a cornerstone of digital civilization.</p>
+<hr>
+<p><em>Digital signatures are not just about proving identity—they&#39;re about creating mathematical foundations for trust itself. In a world where perfect copies are trivial, mathematical uniqueness becomes invaluable.</em></p>
+
+                </div>
+
+                <div class="post-footer">
+                    <div class="post-tags">
+                        <span class="tag">cryptography</span><span class="tag">digital signatures</span><span class="tag">RSA</span><span class="tag">ECDSA</span><span class="tag">mathematics</span>
+                    </div>
+                    <div class="post-navigation">
+                        <a href="../index.html" class="nav-link">← Back to Posts</a>
+                    </div>
+                </div>
+            </article>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2025 Prashish Phunyal. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <!-- Theme Toggle Script -->
+    <script>
+        const themeToggle = document.getElementById('theme-toggle');
+        
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+    </script>
+</body>
+</html>

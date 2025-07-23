@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Bitcoin | Prashish Phunyal</title>
+    <meta name="description" content="">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../src/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Theme Script -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+</head>
+<body>
+    <div class="container">
+        <!-- Theme Toggle -->
+        <div id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+            <button type="button" class="theme-toggle-btn" aria-label="Toggle dark/light mode">
+                <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="site-title">
+                    <a href="../index.html" class="site-title-link">Prashish</a>
+                </h1>
+                <nav class="social-nav">
+                    <a href="https://bsky.app/profile/prashishphunyal.bsky.social" target="_blank" rel="noopener noreferrer" class="social-link">
+                        Bluesky
+                    </a>
+                    <a href="https://github.com/pphunyal" target="_blank" rel="noopener noreferrer" class="social-link">
+                        GitHub
+                    </a>
+                    <a href="#newsletter" class="social-link">
+                        Newsletter
+                    </a>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main">
+            <article class="post-article">
+                <div class="post-header">
+                    <div class="post-meta">
+                        <span class="post-category-tag">blockchain</span>
+                        <time class="post-date" datetime="2025-01-25">January 25, 2025</time>
+                    </div>
+                    <h1 class="post-title">Understanding Bitcoin</h1>
+                    <div class="post-info">
+                        <span class="read-time">5 min read</span>
+                    </div>
+                </div>
+
+                <div class="post-content">
+                    <p>Bitcoin represents one of the most significant technological innovations of the 21st century—not merely as a digital currency, but as the first solution to the double-spending problem in a distributed system without trusted intermediaries. Understanding Bitcoin requires grasping its intricate blend of cryptography, economics, and distributed systems theory.</p>
+<h2>The Genesis: Solving Double-Spending</h2>
+<p>Before Bitcoin, digital money faced a fundamental problem: <strong>double-spending</strong>. Unlike physical cash, digital information can be copied perfectly. How do you prevent someone from spending the same digital coin twice?</p>
+<p>Traditional solutions relied on trusted third parties—banks, payment processors, or governments. Bitcoin&#39;s revolutionary insight was solving this problem through <strong>distributed consensus</strong> and <strong>cryptographic proof</strong> rather than trust.</p>
+<h2>Core Components</h2>
+<h3>1. Digital Signatures (ECDSA)</h3>
+<p>Bitcoin uses <strong>Elliptic Curve Digital Signature Algorithm (ECDSA)</strong> on the secp256k1 curve for transaction authorization.</p>
+<pre><code class="language-python"># Simplified transaction signing
+def sign_transaction(private_key, transaction_hash):
+    # Generate random nonce k
+    k = generate_secure_random()
+    
+    # Calculate signature components
+    r = (k * G).x % n  # x-coordinate of kG
+    s = (k_inv * (transaction_hash + r * private_key)) % n
+    
+    return (r, s)
+</code></pre>
+<p><strong>Key Properties:</strong></p>
+<ul>
+<li>Private key: 256-bit random number</li>
+<li>Public key: Point on elliptic curve (private_key × G)</li>
+<li>Signature proves ownership without revealing private key</li>
+</ul>
+<h3>2. Hash Functions (SHA-256)</h3>
+<p>Bitcoin extensively uses SHA-256 for:</p>
+<ul>
+<li><strong>Transaction IDs</strong>: Double SHA-256 of transaction data</li>
+<li><strong>Block hashes</strong>: Double SHA-256 of block header</li>
+<li><strong>Merkle trees</strong>: Efficient transaction verification</li>
+<li><strong>Mining</strong>: Proof-of-Work computation</li>
+</ul>
+<pre><code class="language-python">def double_sha256(data):
+    return hashlib.sha256(hashlib.sha256(data).digest()).digest()
+
+# Example: Transaction ID
+tx_id = double_sha256(serialize_transaction(transaction))
+</code></pre>
+<h3>3. Merkle Trees</h3>
+<p>Transactions in a block are organized in a <strong>Merkle tree</strong>, enabling efficient verification without downloading entire blocks.</p>
+<pre><code>        Root Hash
+       /         \
+   Hash_AB     Hash_CD
+   /    \      /     \
+Hash_A Hash_B Hash_C Hash_D
+  |      |      |      |
+ Tx_A   Tx_B   Tx_C   Tx_D
+</code></pre>
+<p><strong>Benefits:</strong></p>
+<ul>
+<li><strong>Space efficiency</strong>: SPV clients need only ~80KB per year instead of ~50GB</li>
+<li><strong>Integrity</strong>: Any transaction modification changes the root hash</li>
+<li><strong>Proof generation</strong>: Log(n) path to verify transaction inclusion</li>
+</ul>
+<h2>Bitcoin Transactions</h2>
+<h3>UTXO Model</h3>
+<p>Bitcoin uses an <strong>Unspent Transaction Output (UTXO)</strong> model rather than account balances.</p>
+<pre><code class="language-python">class UTXO:
+    def __init__(self, tx_id, output_index, amount, script_pubkey):
+        self.tx_id = tx_id
+        self.output_index = output_index
+        self.amount = amount  # in satoshis
+        self.script_pubkey = script_pubkey  # spending condition
+
+class Transaction:
+    def __init__(self, inputs, outputs, version=1, locktime=0):
+        self.version = version
+        self.inputs = inputs    # List of previous UTXOs being spent
+        self.outputs = outputs  # List of new UTXOs being created
+        self.locktime = locktime
+</code></pre>
+<h3>Script System</h3>
+<p>Bitcoin includes a stack-based scripting language for defining spending conditions:</p>
+<pre><code># Pay-to-Public-Key-Hash (P2PKH)
+OP_DUP OP_HASH160 &lt;pubkey_hash&gt; OP_EQUALVERIFY OP_CHECKSIG
+
+# Pay-to-Script-Hash (P2SH)
+OP_HASH160 &lt;script_hash&gt; OP_EQUAL
+
+# Multisig (2-of-3)
+OP_2 &lt;pubkey1&gt; &lt;pubkey2&gt; &lt;pubkey3&gt; OP_3 OP_CHECKMULTISIG
+</code></pre>
+<h2>Blockchain Structure</h2>
+<h3>Block Header</h3>
+<p>Each block contains a header with critical metadata:</p>
+<pre><code class="language-python">class BlockHeader:
+    def __init__(self):
+        self.version = 1              # 4 bytes
+        self.prev_block_hash = None   # 32 bytes
+        self.merkle_root = None       # 32 bytes
+        self.timestamp = None         # 4 bytes
+        self.difficulty_target = None # 4 bytes
+        self.nonce = None            # 4 bytes
+        # Total: 80 bytes
+</code></pre>
+<h3>Mining and Proof-of-Work</h3>
+<p>Mining is the process of finding a <strong>nonce</strong> such that the block hash meets the difficulty target:</p>
+<pre><code class="language-python">def mine_block(block_header, difficulty_target):
+    nonce = 0
+    while True:
+        block_header.nonce = nonce
+        block_hash = double_sha256(serialize_header(block_header))
+        
+        if int.from_bytes(block_hash, &#39;big&#39;) &lt; difficulty_target:
+            return nonce, block_hash
+        
+        nonce += 1
+        if nonce &gt; 2**32:
+            # Modify timestamp or merkle root and restart
+            break
+</code></pre>
+<p><strong>Key Insights:</strong></p>
+<ul>
+<li><strong>Difficulty adjustment</strong>: Every 2016 blocks (~2 weeks) to maintain 10-minute average</li>
+<li><strong>Energy expenditure</strong>: Proof-of-Work requires real-world resources</li>
+<li><strong>Longest chain rule</strong>: Chain with most accumulated work is valid</li>
+</ul>
+<h2>Network Protocol</h2>
+<h3>Peer Discovery</h3>
+<p>Bitcoin nodes discover peers through:</p>
+<ol>
+<li><strong>DNS seeds</strong>: Hardcoded DNS names returning node IPs</li>
+<li><strong>Peer exchange</strong>: Nodes share known peer addresses</li>
+<li><strong>IRC channels</strong>: Historical method (deprecated)</li>
+</ol>
+<h3>Message Types</h3>
+<pre><code class="language-python"># Key message types in Bitcoin protocol
+messages = {
+    &#39;version&#39;: &#39;Initial handshake&#39;,
+    &#39;inv&#39;: &#39;Inventory announcement (new blocks/transactions)&#39;,
+    &#39;getdata&#39;: &#39;Request specific data&#39;,
+    &#39;block&#39;: &#39;Full block data&#39;,
+    &#39;tx&#39;: &#39;Transaction data&#39;,
+    &#39;ping/pong&#39;: &#39;Keep-alive messages&#39;
+}
+</code></pre>
+<h3>Transaction Propagation</h3>
+<ol>
+<li><strong>Creation</strong>: Wallet creates and signs transaction</li>
+<li><strong>Broadcast</strong>: Transaction sent to connected peers</li>
+<li><strong>Validation</strong>: Each node validates before forwarding</li>
+<li><strong>Mempool</strong>: Valid transactions stored in memory pool</li>
+<li><strong>Mining</strong>: Miners select transactions for inclusion in blocks</li>
+</ol>
+<h2>Consensus Mechanisms</h2>
+<h3>Nakamoto Consensus</h3>
+<p>Bitcoin&#39;s consensus combines several elements:</p>
+<ol>
+<li><strong>Longest chain rule</strong>: Accept chain with most proof-of-work</li>
+<li><strong>Economic incentives</strong>: Miners rewarded for honest behavior</li>
+<li><strong>Difficulty adjustment</strong>: Maintains consistent block timing</li>
+<li><strong>Decentralized validation</strong>: All nodes verify all transactions</li>
+</ol>
+<h3>Finality and Confirmations</h3>
+<p>Unlike traditional systems, Bitcoin provides <strong>probabilistic finality</strong>:</p>
+<pre><code class="language-python">def confirmation_security(confirmations):
+    # Probability of successful double-spend attack
+    attacker_hash_rate = 0.3  # 30% of network
+    honest_hash_rate = 0.7    # 70% of network
+    
+    # Simplified calculation (actual formula more complex)
+    probability = (attacker_hash_rate / honest_hash_rate) ** confirmations
+    return 1 - probability
+
+# 6 confirmations ≈ 99.9% security against 30% attacker
+</code></pre>
+<h2>Economic Model</h2>
+<h3>Monetary Policy</h3>
+<p>Bitcoin has a <strong>fixed supply schedule</strong>:</p>
+<pre><code class="language-python">def calculate_block_reward(block_height):
+    halvings = block_height // 210000
+    if halvings &gt;= 64:  # After ~64 halvings, reward becomes 0
+        return 0
+    
+    initial_reward = 50 * 100000000  # 50 BTC in satoshis
+    return initial_reward &gt;&gt; halvings  # Divide by 2^halvings
+
+# Total supply asymptotically approaches 21 million BTC
+total_supply = sum(calculate_block_reward(h) for h in range(0, 210000 * 64, 210000))
+</code></pre>
+<h3>Fee Market</h3>
+<p>Transaction fees serve dual purposes:</p>
+<ol>
+<li><strong>Spam prevention</strong>: Cost to use network resources</li>
+<li><strong>Miner compensation</strong>: Revenue after block rewards diminish</li>
+</ol>
+<pre><code class="language-python">def calculate_fee_rate(transaction_size, fee_paid):
+    return fee_paid / transaction_size  # satoshis per byte
+
+# Fee estimation based on mempool state
+def estimate_confirmation_time(fee_rate):
+    # Analyze recent blocks and mempool to estimate time
+    # Higher fee_rate → faster confirmation
+    pass
+</code></pre>
+<h2>Scaling and Layer 2</h2>
+<h3>On-Chain Limitations</h3>
+<p>Bitcoin&#39;s base layer has inherent constraints:</p>
+<ul>
+<li><strong>Block size</strong>: ~1MB every 10 minutes</li>
+<li><strong>Transaction throughput</strong>: ~7 transactions per second</li>
+<li><strong>Finality time</strong>: 30-60 minutes for high confidence</li>
+</ul>
+<h3>Lightning Network</h3>
+<p>The Lightning Network enables <strong>off-chain scaling</strong> through payment channels:</p>
+<pre><code class="language-python">class PaymentChannel:
+    def __init__(self, alice_amount, bob_amount):
+        self.alice_balance = alice_amount
+        self.bob_balance = bob_amount
+        self.total_capacity = alice_amount + bob_amount
+    
+    def send_payment(self, from_party, to_party, amount):
+        if from_party == &#39;alice&#39; and self.alice_balance &gt;= amount:
+            self.alice_balance -= amount
+            self.bob_balance += amount
+            return True
+        elif from_party == &#39;bob&#39; and self.bob_balance &gt;= amount:
+            self.bob_balance -= amount
+            self.alice_balance += amount
+            return True
+        return False
+</code></pre>
+<p><strong>Key Features:</strong></p>
+<ul>
+<li><strong>Instant payments</strong>: No blockchain confirmation needed</li>
+<li><strong>Low fees</strong>: Only routing fees, no mining fees</li>
+<li><strong>Privacy</strong>: Payments not visible on blockchain</li>
+<li><strong>Scalability</strong>: Millions of transactions per second theoretically possible</li>
+</ul>
+<h2>Security Considerations</h2>
+<h3>Attack Vectors</h3>
+<ol>
+<li><strong>51% Attack</strong>: Control majority hash rate to rewrite history</li>
+<li><strong>Selfish Mining</strong>: Strategic mining to gain unfair advantage  </li>
+<li><strong>Eclipse Attack</strong>: Isolate node from honest network</li>
+<li><strong>Double-Spending</strong>: Spend same coins twice (prevented by consensus)</li>
+</ol>
+<h3>Cryptographic Assumptions</h3>
+<p>Bitcoin&#39;s security relies on:</p>
+<ul>
+<li><strong>Hash function security</strong>: SHA-256 resistance to collisions/preimages</li>
+<li><strong>Elliptic curve security</strong>: ECDLP hardness on secp256k1</li>
+<li><strong>Random number generation</strong>: Secure entropy for key generation</li>
+</ul>
+<h2>Real-World Implementation</h2>
+<h3>Node Software</h3>
+<pre><code class="language-python">class BitcoinNode:
+    def __init__(self):
+        self.blockchain = Blockchain()
+        self.mempool = TransactionPool()
+        self.peer_manager = PeerManager()
+        self.wallet = Wallet()
+    
+    def start(self):
+        # Connect to peers
+        self.peer_manager.discover_peers()
+        
+        # Sync blockchain
+        self.sync_blockchain()
+        
+        # Start mining (if configured)
+        if self.mining_enabled:
+            self.start_mining()
+    
+    def handle_new_transaction(self, tx):
+        if self.validate_transaction(tx):
+            self.mempool.add(tx)
+            self.broadcast_to_peers(tx)
+</code></pre>
+<h3>Mining Economics</h3>
+<pre><code class="language-python">def mining_profitability(hash_rate, power_consumption, electricity_cost, 
+                        btc_price, network_difficulty):
+    # Calculate expected daily revenue
+    network_hash_rate = difficulty_to_hash_rate(network_difficulty)
+    my_percentage = hash_rate / network_hash_rate
+    daily_btc_revenue = my_percentage * 144 * 6.25  # 144 blocks/day, 6.25 BTC reward
+    
+    # Calculate costs
+    daily_power_kwh = power_consumption * 24 / 1000
+    daily_electricity_cost = daily_power_kwh * electricity_cost
+    
+    # Profit calculation
+    daily_revenue_usd = daily_btc_revenue * btc_price
+    daily_profit = daily_revenue_usd - daily_electricity_cost
+    
+    return daily_profit
+</code></pre>
+<h2>Future Developments</h2>
+<h3>Taproot and Schnorr Signatures</h3>
+<p>Bitcoin&#39;s Taproot upgrade (activated 2021) introduces:</p>
+<ul>
+<li><strong>Schnorr signatures</strong>: Better efficiency and privacy</li>
+<li><strong>MAST</strong>: More complex smart contracts</li>
+<li><strong>Key aggregation</strong>: Multiple signatures appear as one</li>
+</ul>
+<h3>Quantum Resistance</h3>
+<p>Potential quantum threats and mitigations:</p>
+<ul>
+<li><strong>Quantum computers</strong>: Could break ECDLP and RSA</li>
+<li><strong>Post-quantum cryptography</strong>: Research into quantum-resistant algorithms</li>
+<li><strong>Address reuse</strong>: Avoid to limit quantum attack surface</li>
+</ul>
+<h2>Conclusion</h2>
+<p>Bitcoin represents a masterful synthesis of cryptography, economics, and distributed systems. Its genius lies not in any single innovation, but in how existing technologies were combined to solve the double-spending problem without trusted intermediaries.</p>
+<p>Key innovations:</p>
+<ol>
+<li><strong>Proof-of-Work consensus</strong>: Turns energy into security</li>
+<li><strong>UTXO model</strong>: Elegant transaction representation</li>
+<li><strong>Script system</strong>: Programmable money without complexity</li>
+<li><strong>Difficulty adjustment</strong>: Self-regulating monetary system</li>
+<li><strong>Network effects</strong>: Value increases with adoption</li>
+</ol>
+<p>Understanding Bitcoin deeply requires appreciating both its technical elegance and its economic implications. It&#39;s not just digital gold—it&#39;s a new form of digital property with mathematically enforced scarcity, enabling value transfer across space and time without relying on traditional institutions.</p>
+<p>As Bitcoin continues evolving through protocol upgrades and layer-2 solutions, its fundamental properties remain constant: decentralized, censorship-resistant, and algorithmically scarce money for the digital age.</p>
+<hr>
+<p><em>To truly understand Bitcoin, consider running your own node, exploring the source code, and experimenting with the Lightning Network. The rabbit hole is deep, but the journey is rewarding.</em></p>
+
+                </div>
+
+                <div class="post-footer">
+                    <div class="post-tags">
+                        <span class="tag">bitcoin</span><span class="tag">blockchain</span><span class="tag">cryptocurrency</span><span class="tag">proof of work</span>
+                    </div>
+                    <div class="post-navigation">
+                        <a href="../index.html" class="nav-link">← Back to Posts</a>
+                    </div>
+                </div>
+            </article>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2025 Prashish Phunyal. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <!-- Theme Toggle Script -->
+    <script>
+        const themeToggle = document.getElementById('theme-toggle');
+        
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+    </script>
+</body>
+</html>
