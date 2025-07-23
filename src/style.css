@@ -1,3 +1,6 @@
+/* Import JetBrains Mono font */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&display=swap');
+
 /* ===== CSS CUSTOM PROPERTIES ===== */
 *, *::before, *::after {
     box-sizing: border-box;
@@ -19,6 +22,7 @@
     
     /* Typography */
     --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-family-mono: 'JetBrains Mono', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
     --font-size-sm: 0.8rem;
     --font-size-base: 0.9rem;
     --font-size-lg: 1rem;
@@ -790,7 +794,7 @@ mark {
 }
 
 .post-header {
-    margin-bottom: var(--space-12);
+    margin-bottom: var(--space-6);
     text-align: center;
     border-bottom: 1px solid var(--border-color);
     padding-bottom: var(--space-8);
@@ -871,10 +875,13 @@ mark {
     background: var(--bg-secondary);
     padding: var(--space-1) var(--space-2);
     border-radius: var(--radius-md);
-    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-family: var(--font-family-mono);
     font-size: 0.9em;
+    font-weight: 400;
+    line-height: 1.4;
     color: var(--accent-primary);
     border: 1px solid var(--border-color);
+    font-feature-settings: "liga" 1, "calt" 1;
 }
 
 .post-content pre {
@@ -884,6 +891,7 @@ mark {
     overflow-x: auto;
     margin: var(--space-6) 0;
     border: 1px solid var(--border-color);
+    line-height: 1.5;
 }
 
 .post-content pre code {
@@ -891,6 +899,8 @@ mark {
     padding: 0;
     border: none;
     color: var(--text-primary);
+    font-weight: 400;
+    font-feature-settings: "liga" 1, "calt" 1;
 }
 
 .post-content blockquote {
