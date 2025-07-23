@@ -1,8 +1,55 @@
 # Prashish Phunyal's Blog
 
-A minimalist blog built with vanilla HTML, CSS, and JavaScript featuring dark/light themes, category filtering, search functionality, and Markdown-to-HTML conversion.
+A minimalist blog built with vanilla HTML, CSS, and JavaScript featuring dark/light themes, category filtering, search functionality, and Markdown-to-H## üìÇ Categories
 
-## Ì≥Å Project Structure
+- **blockchain**: Blockchain technology, cryptocurrencies, decentralized systems
+- **cryptography**: Cryptographic algorithms, security, digital signatures
+- **mathematics**: Mathematical foundations, algorithms, theoretical concepts
+- **fragments**: Short thoughts, reflections, and miscellaneous posts
+
+### Adding New Categories
+
+To add a new category to the blog system:
+
+1. **Create posts with the new category** in their front matter:
+   ```markdown
+   ---
+   title: "Your Post Title"
+   date: "2025-01-10"
+   category: "new-category"  # Your new category name
+   excerpt: "Post description"
+   tags: ["tag1", "tag2"]
+   author: "Prashish Phunyal"
+   readTime: "5 min read"
+   ---
+   ```
+
+2. **Update the homepage category tiles** in `index.html`:
+   ```html
+   <div class="category-tile" data-category="new-category">
+       <h3>New Category</h3>
+       <p>Description of your new category</p>
+   </div>
+   ```
+
+3. **Add category styling** in `src/style.css` (optional):
+   ```css
+   .category-tile[data-category="new-category"] {
+       /* Custom styling for your category */
+   }
+   ```
+
+4. **Update router.js** to handle the new category route:
+   - The router automatically handles new categories, but you may want to update the category display name mapping if needed.
+
+5. **Rebuild metadata** to include the new category:
+   ```bash
+   node blog-build.js update-metadata posts
+   ```
+
+The blog system automatically recognizes new categories when processing posts, so minimal configuration is required!nversion.
+
+## Project Structure
 
 ```
 blog.prashish.tech/
@@ -21,7 +68,7 @@ blog.prashish.tech/
 ‚îî‚îÄ‚îÄ README.md               # Project documentation
 ```
 
-## Ì¥ß Blog Build System
+## Blog Build System
 
 The `blog-build.js` script provides a comprehensive CLI for managing markdown-to-HTML conversion and metadata management.
 
@@ -114,7 +161,7 @@ node blog-build.js build-all posts
 node blog-build.js update-metadata posts
 ```
 
-## Ì≥ù Markdown Front Matter Format
+## Markdown Front Matter Format
 
 Each Markdown file should start with YAML front matter:
 
@@ -144,7 +191,7 @@ Your markdown content goes here...
 - **Markdown Support**: Full markdown support with syntax highlighting
 - **SEO Friendly**: Proper meta tags and semantic HTML structure
 
-## Ì∫Ä Development
+## Development
 
 ### Local Development
 ```bash
@@ -167,7 +214,7 @@ npx serve .
 3. **Update** metadata automatically
 4. **Deploy** static files to your hosting platform
 
-## Ìª†Ô∏è Tech Stack
+## Tech Stack
 
 - **Frontend**: Vanilla HTML5, CSS3, JavaScript (ES6+)
 - **Styling**: CSS Custom Properties, CSS Grid, Flexbox
@@ -176,14 +223,14 @@ npx serve .
 - **Icons**: Inline SVG icons
 - **Hosting**: Static site hosting (GitHub Pages, Netlify, etc.)
 
-## Ì≥Ç Categories
+## Categories
 
 - **blockchain**: Blockchain technology, cryptocurrencies, decentralized systems
 - **cryptography**: Cryptographic algorithms, security, digital signatures
 - **mathematics**: Mathematical foundations, algorithms, theoretical concepts
 - **fragments**: Short thoughts, reflections, and miscellaneous posts
 
-## Ì¥Ñ Deployment
+## Deployment
 
 The blog is designed as a static site and can be deployed to any static hosting service:
 
@@ -198,6 +245,6 @@ node blog-build.js update-metadata posts
 # (GitHub Pages, Netlify, Vercel, etc.)
 ```
 
-## Ì≥Ñ License
+## License
 
 MIT License - feel free to use this as a template for your own blog!
