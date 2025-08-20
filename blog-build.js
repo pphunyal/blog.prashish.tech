@@ -20,6 +20,49 @@ class MarkdownConverter {
             headerIds: false,
             mangle: false
         });
+
+        // Custom renderer for image processing
+        const renderer = new marked.Renderer();
+        const originalImage = renderer.image;
+        
+        renderer.image = function(href, title, text) {
+            // Process image path for proper relative linking
+            let processedHref = href;
+            
+            // If it's a relative path starting with images/ or assets/
+            if (href.startsWith('images/') || href.startsWith('assets/')) {
+                processedHref = `../src/assets/${href}`;
+            } 
+            // If it's already a relative path to src/assets/
+            else if (href.startsWith('src/assets/')) {
+                processedHref = `../${href}`;
+            }
+            // If it's just a filename, assume it's in the images directory
+            else if (!href.startsWith('http') && !href.startsWith('/') && !href.startsWith('../')) {
+                processedHref = `../src/assets/images/${href}`;
+            }
+            
+            // Generate HTML with proper attributes
+            let html = `<img src="${processedHref}" alt="${text || ''}"`;
+            
+            if (title) {
+                html += ` title="${title}"`;
+            }
+            
+            html += ' loading="lazy">';
+            
+            // If there's a title, wrap in figure with caption
+            if (title && title.trim()) {
+                html = `<figure class="image-container">
+                    ${html}
+                    <figcaption>${title}</figcaption>
+                </figure>`;
+            }
+            
+            return html;
+        };
+
+        marked.setOptions({ renderer });
     }
 
     /**
@@ -91,7 +134,7 @@ class MarkdownConverter {
     <!-- Theme Script -->
     <script>
         (function() {
-            const savedTheme = localStorage.getItem('theme') || 'dark';
+            const savedTheme = localStorage.getItem('theme') || 'light';
             document.documentElement.setAttribute('data-theme', savedTheme);
         })();
     </script>

@@ -181,6 +181,104 @@ readTime: "5 min read"
 Your markdown content goes here...
 ```
 
+## Adding Images to Blog Posts
+
+The blog system supports comprehensive image functionality with automatic processing and responsive display.
+
+### Image Syntax
+
+#### Basic Image
+```markdown
+![Alt text](image-filename.jpg)
+```
+
+#### Image with Caption
+Use the title attribute to add captions that will be displayed below the image:
+```markdown
+![Bitcoin network diagram](bitcoin-network.png "Bitcoin peer-to-peer network architecture")
+```
+
+### Image Organization
+
+Images are stored in `src/assets/images/` with category-specific subdirectories:
+
+```
+src/assets/images/
+├── crypto/         # Cryptocurrency and blockchain images
+├── tech/           # Technology and programming images
+└── personal/       # Personal and reflection images
+```
+
+### Image Path Options
+
+The build system automatically processes image paths:
+
+```markdown
+# Category subdirectory (recommended)
+![Hash function diagram](crypto/hash-function.png)
+![Performance chart](tech/performance-chart.png)
+
+# Direct from images directory
+![Diagram](blockchain-architecture.png)
+
+# Full relative path
+![Logo](../src/assets/images/logo.png)
+
+# External URLs work as expected
+![External image](https://example.com/image.jpg)
+```
+
+### Image Features
+
+- **Responsive Design**: Images automatically scale for different screen sizes
+- **Lazy Loading**: Images load only when they come into view
+- **Hover Effects**: Subtle zoom and shadow effects on hover
+- **Dark Mode Support**: Images adapt to theme changes
+- **Figure Captions**: Title attributes become styled figure captions
+- **Loading Optimization**: Automatic `loading="lazy"` attribute
+
+### Image Best Practices
+
+1. **File Naming**: Use descriptive, lowercase filenames with hyphens
+   ```
+   ✅ bitcoin-network-diagram.png
+   ❌ Bitcoin Network Diagram.PNG
+   ```
+
+2. **File Organization**: Place images in appropriate category folders
+   ```
+   ✅ crypto/elliptic-curve-example.png
+   ✅ tech/algorithm-comparison.jpg
+   ```
+
+3. **Alt Text**: Always provide meaningful alt text for accessibility
+   ```markdown
+   ✅ ![Elliptic curve showing point addition](crypto/ecc-point-addition.png)
+   ❌ ![Image](crypto/ecc-point-addition.png)
+   ```
+
+4. **File Sizes**: Optimize images for web (aim for <500KB per image)
+
+### Example Usage in Blog Post
+
+```markdown
+---
+title: "Understanding Elliptic Curve Cryptography"
+date: "2024-01-15"
+category: "cryptography"
+---
+
+# Understanding Elliptic Curve Cryptography
+
+ECC provides the same level of security as RSA with smaller key sizes.
+
+![Elliptic curve over finite field](crypto/elliptic-curve-field.png "Example of an elliptic curve y² = x³ + ax + b over a finite field")
+
+The mathematical foundation involves point operations on the curve...
+
+![Point addition on elliptic curve](crypto/ecc-point-addition.png "Geometric interpretation of point addition P + Q = R")
+```
+
 ## ✨ Features
 
 - **Dark/Light Theme**: Toggle between themes with persistent localStorage

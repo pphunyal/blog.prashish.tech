@@ -236,7 +236,7 @@ a:hover, a:focus {
     left: 0;
     width: 100%;
     height: 2px;
-    background: var(--gradient);
+    background: var(--accent-hover);
     transform: scaleX(0);
     transition: transform 0.3s ease;
     transform-origin: left;
@@ -342,7 +342,7 @@ a:hover, a:focus {
     left: -100%;
     width: 100%;
     height: 100%;
-    background: var(--gradient);
+    background: var(--accent-hover);
     opacity: 0.05;
     transition: left 0.3s ease;
 }
@@ -630,9 +630,9 @@ a:hover, a:focus {
 }
 
 .back-button:hover {
-    background: var(--bg-elevated);
-    border-color: var(--accent-primary);
-    color: var(--accent-primary);
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
+    color: #fff;
     text-decoration: none;
     transform: translateX(-2px);
 }
@@ -923,6 +923,110 @@ mark {
 .post-content a:hover {
     border-bottom-color: var(--accent-primary);
     text-decoration: none;
+}
+
+/* ===== IMAGE STYLES ===== */
+.post-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-md);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin: var(--space-6) auto;
+    display: block;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+[data-theme="dark"] .post-content img {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.post-content img:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="dark"] .post-content img:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+/* Image captions (text directly after image) */
+.post-content img + em,
+.post-content figure figcaption {
+    display: block;
+    text-align: center;
+    font-size: var(--font-size-sm);
+    color: var(--text-muted);
+    margin-top: var(--space-2);
+    margin-bottom: var(--space-4);
+    font-style: italic;
+    line-height: 1.4;
+}
+
+/* Image containers for better layout */
+.post-content .image-container {
+    margin: var(--space-8) 0;
+    text-align: center;
+}
+
+.post-content .image-container img {
+    margin: 0 auto var(--space-2);
+}
+
+/* Image grid for multiple images */
+.post-content .image-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-4);
+    margin: var(--space-8) 0;
+}
+
+.post-content .image-grid img {
+    margin: 0;
+    width: 100%;
+}
+
+/* Figure elements */
+.post-content figure {
+    margin: var(--space-8) 0;
+    text-align: center;
+}
+
+.post-content figure img {
+    margin: 0 auto var(--space-2);
+}
+
+/* Image with border styling */
+.post-content .image-bordered img {
+    border: 1px solid var(--border-color);
+    padding: var(--space-2);
+    background: var(--bg-primary);
+}
+
+/* Inline images */
+.post-content .image-inline img {
+    display: inline-block;
+    margin: 0 var(--space-2);
+    vertical-align: middle;
+    max-height: 1.5em;
+    border-radius: var(--radius-md);
+    box-shadow: none;
+}
+
+/* Responsive images */
+@media (max-width: 768px) {
+    .post-content img {
+        margin: var(--space-4) auto;
+    }
+    
+    .post-content .image-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-3);
+        margin: var(--space-6) 0;
+    }
+    
+    .post-content .image-container {
+        margin: var(--space-6) 0;
+    }
 }
 
 .post-footer {
